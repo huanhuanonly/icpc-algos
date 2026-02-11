@@ -30,10 +30,10 @@ jobs:
         run: |
           git config user.name  "huanhuanonly"
           git config user.email "3347484963@qq.com"
-          
+
           git add -- ':(glob)vscode.*.json'
 
-          if git diff --quiet -- ':(glob)vscode.*.json'; then
+          if git diff --cached --quiet -- ':(glob)vscode.*.json'; then
             echo "No changes."
             exit 0
           fi
