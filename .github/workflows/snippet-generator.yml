@@ -1,0 +1,38 @@
+# .github/workflows/snippet-generator.yml
+name: snippet-generator
+
+on:
+  push:
+    paths:
+      - ".code-snippets/**"
+      - ".github/workflows/snippet-generator.yml"
+  pull_request:
+    paths:
+      - ".code-snippets/**"
+
+jobs:
+  build-and-generate-snippets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build snippet-generator
+        run: g++ -std=c++20 -O2 -Wall -Wextra .scripts/snippet-generator.cpp -o snippet-generator
+
+      - name: Run snippet-generator
+        run: ./snippet-generator .code-snippets .
+
+      - name: Commit and push
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet -- ':(glob)vscode.*.json'; then
+            exit 0
+          fi
+          git config user.name  "huanhuanonly"
+          git config user.email "3347484963@qq.com"
+          git add -- ':(glob)vscode.*.json'
+          git commit -m "chore[bot]: auto-update snippets [skip ci]"
+          git push
