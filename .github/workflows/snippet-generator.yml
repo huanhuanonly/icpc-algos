@@ -28,11 +28,15 @@ jobs:
       - name: Commit and push
         if: github.event_name == 'push'
         run: |
-          if git diff --quiet -- ':(glob)vscode.*.json'; then
-            exit 0
-          fi
           git config user.name  "huanhuanonly"
           git config user.email "3347484963@qq.com"
+          
           git add -- ':(glob)vscode.*.json'
+
+          if git diff --quiet -- ':(glob)vscode.*.json'; then
+            echo "No changes."
+            exit 0
+          fi
+
           git commit -m "chore[bot]: auto-update snippets [skip ci]"
           git push
