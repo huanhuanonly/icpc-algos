@@ -19,15 +19,9 @@ public:
     explicit
     DisjointSet(size_type __n)
         : _M_tree(__n)
-    {
-        for (size_type i = 0; i < __n; ++i)
-        {
-            _M_tree[i].parent = i;
-            _M_tree[i].size = 1;
-        }
-    }
+    { reset(); }
 
-    size_type
+    [[nodiscard]] size_type
     find(size_type u) const
     { return is_root(u) ? u : find(_M_tree[u].parent); }
 
@@ -47,9 +41,9 @@ public:
             std::swap(fu, fv);
         }
 
-        _M_history.emplace(
-            std::make_pair(_M_tree[fv].parent, _M_tree[fv].parent),
-            std::make_pair(_M_tree[fu].size, _M_tree[fu].size));
+        _M_history.emplace(change_record{
+                {_M_tree[fv].parent, _M_tree[fv].parent},
+                {_M_tree[fu].size,   _M_tree[fu].size  }});
         
         _M_tree[fv].parent = fu;
         _M_tree[fu].size += _M_tree[fv].size;
@@ -66,6 +60,41 @@ public:
     { return find(u) == find(v); }
 
     void
+    expand(size_type __n)
+    {
+        const size_type old_size = size();
+        _M_tree.resize(old_size + __n);
+
+        for (size_type i = old_size; i < old_size + __n; ++i)
+        {
+            _M_tree[i].parent = i;
+            _M_tree[i].size = 1;
+        }
+    }
+
+    void
+    reset()
+    {
+        for (size_type i = 0; i < size(); ++i)
+        {
+            _M_tree[i].parent = i;
+            _M_tree[i].size = 1;
+        }
+    }
+
+    [[nodiscard]] size_type
+    size() const
+    { return static_cast<size_type>(_M_tree.size()); }
+
+    [[nodiscard]] size_type
+    component_size(size_type u) const
+    { return _M_tree[find(u)].size; }
+
+    [[nodiscard]] size_type
+    checkpoint() const
+    { return static_cast<size_type>(_M_history.size()); }
+
+    void
     undo()
     {
         if (not _M_history.empty())
@@ -78,18 +107,6 @@ public:
             _M_history.pop();
         }
     }
-
-    [[nodiscard]] size_type
-    size(size_type u) const
-    { return static_cast<size_type>(_M_tree.size()); }
-
-    [[nodiscard]] size_type
-    component_size(size_type u) const
-    { return _M_tree[find(u)].size; }
-
-    [[nodiscard]] size_type
-    checkpoint() const
-    { return static_cast<size_type>(_M_history.size()); }
 
     void
     rollback(size_type __cp)
