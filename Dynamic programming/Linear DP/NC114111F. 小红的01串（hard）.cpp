@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 102
  * 
- * => https://ac.nowcoder.com/acm/contest/114111/F ( @c 150 )
+ * => 小红的01串（hard） ( @c 1800 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/114111/F
  * 

@@ -1,7 +1,7 @@
 /**
  * Codeforces Round 1071 (Div. 3)
  * 
- * => D. Blackslex and Penguin Civilization ( @c Rating )
+ * => D. Blackslex and Penguin Civilization ( @c 1300 )
  * 
  * -> https://codeforces.com/contest/2179/problem/D
  * 

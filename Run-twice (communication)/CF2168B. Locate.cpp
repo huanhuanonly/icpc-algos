@@ -1,7 +1,7 @@
 /**
  * Testing Round 20 (Unrated, Communication Problems)
  * 
- * => B. Locate ( @c Rating )
+ * => B. Locate
  * 
  * -> https://codeforces.com/contest/2168/problem/B
  * 

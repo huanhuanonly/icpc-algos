@@ -7,7 +7,7 @@
  * 
  * Submissions ~> https://atcoder.jp/contests/abc383/submissions/65066470 By huanhuanonly
  * 
- * @b Minimum-spanning-tree ( @a Kruskal’s-algorithm )
+ * @b Kruskal’s-algorithm
  * 
  * ----April 20, 2025 [21h:54m:28s]----
  */

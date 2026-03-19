@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 102
  * 
- * => G-小红的双排列查询 ( @c 300 )
+ * => G-小红的双排列查询 ( @c 2000 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/114111/G
  * 

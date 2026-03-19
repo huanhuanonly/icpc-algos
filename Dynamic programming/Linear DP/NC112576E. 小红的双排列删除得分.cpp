@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 100
  * 
- * => E-小红的双排列删除得分 ( @c 150 )
+ * => E-小红的双排列删除得分 ( @c 1500 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/112576/E
  * 

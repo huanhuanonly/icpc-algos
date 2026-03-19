@@ -7,7 +7,7 @@
  * 
  * Submissions ~> https://codeforces.com/contest/1624/submission/341991942 By huanhuanonly
  * 
- * @b Minimum-spanning-tree ( @a Kruskal’s-algorithm ) and @b Bitwise-OR
+ * @b Kruskal’s-algorithm and @b Bitwise-OR
  * 
  * ----October 05, 2025 [18h:50m:23s]----
 */

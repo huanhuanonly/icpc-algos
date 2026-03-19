@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 105
  * 
- * => E-小苯的xor图 ( @c 250 )
+ * => E-小苯的xor图 ( @c 1500 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/115861/E
  * 

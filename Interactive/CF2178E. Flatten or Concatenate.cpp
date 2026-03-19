@@ -1,7 +1,7 @@
 /**
  * Good Bye 2025
  * 
- * => E. Flatten or Concatenate ( @c Rating )
+ * => E. Flatten or Concatenate ( @c 2000 )
  * 
  * -> https://codeforces.com/contest/2178/problem/E
  * 

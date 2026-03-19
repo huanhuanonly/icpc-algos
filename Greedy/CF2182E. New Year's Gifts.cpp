@@ -1,7 +1,7 @@
 /**
  * Educational Codeforces Round 186 (Rated for Div. 2)
  * 
- * => E. New Year's Gifts ( @c Rating )
+ * => E. New Year's Gifts ( @c 1800 )
  * 
  * -> https://codeforces.com/contest/2182/problem/E
  * 

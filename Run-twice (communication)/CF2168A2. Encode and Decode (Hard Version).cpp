@@ -1,7 +1,7 @@
 /**
  * Testing Round 20 (Unrated, Communication Problems)
  * 
- * => A2. Encode and Decode (Hard Version) ( @c Rating )
+ * => A2. Encode and Decode (Hard Version)
  * 
  * -> https://codeforces.com/contest/2168/problem/A2
  * 

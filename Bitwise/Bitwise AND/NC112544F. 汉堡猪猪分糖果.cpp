@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 99
  * 
- * => F-汉堡猪猪分糖果 ( @c 300 )
+ * => F-汉堡猪猪分糖果 ( @c 2000 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/112544/F
  * 

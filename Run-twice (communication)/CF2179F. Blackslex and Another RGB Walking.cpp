@@ -1,7 +1,7 @@
 /**
  * Codeforces Round 1071 (Div. 3)
  * 
- * => F. Blackslex and Another RGB Walking ( @c Rating )
+ * => F. Blackslex and Another RGB Walking ( @c 2000 )
  * 
  * -> https://codeforces.com/contest/2179/problem/F
  * 

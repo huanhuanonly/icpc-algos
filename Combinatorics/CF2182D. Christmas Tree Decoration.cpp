@@ -1,7 +1,7 @@
 /**
  * Educational Codeforces Round 186 (Rated for Div. 2)
  * 
- * => D. Christmas Tree Decoration ( @c Rating )
+ * => D. Christmas Tree Decoration ( @c 1600 )
  * 
  * -> https://codeforces.com/contest/2182/problem/D
  * 

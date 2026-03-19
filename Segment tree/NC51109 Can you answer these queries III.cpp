@@ -3,7 +3,11 @@
  * 
  * -> https://ac.nowcoder.com/acm/problem/51109
  * 
+ * Submissions ~> https://ac.nowcoder.com/acm/contest/view-submission?submissionId=63974418 By huanhuanonly
+ * 
  * @b Segment-tree to find the maximum sub-segment sum of interval
+ * 
+ * ----September 22, 2023 [21h:09m:07s]----
 */
 
 #include <bits/stdc++.h>

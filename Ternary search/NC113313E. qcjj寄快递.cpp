@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 101
  * 
- * => E-qcjj寄快递 ( @c 200 )
+ * => E-qcjj寄快递 ( @c 1300 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/113313/E
  * 

@@ -5,7 +5,7 @@
  * 
  * -> https://ac.nowcoder.com/acm/contest/77769/L
  * 
- * @b Hashing on SegmentTree
+ * @b Hashing on @b Segment-tree
  * 
  * @see also https://www.cnblogs.com/knife-rose/p/11230936.html
  *       and https://blog.csdn.net/weixin_43350051/article/details/100011560

@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 105
  * 
- * => F-小苯的前缀gcd构造 ( @c 300 )
+ * => F-小苯的前缀gcd构造 ( @c 1800 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/115861/F
  * 

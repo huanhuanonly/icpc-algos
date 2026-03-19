@@ -7,7 +7,7 @@
  * 
  * Submissions ~> https://codeforces.com/contest/436/submission/342380858 By huanhuanonly
  * 
- * @b Minimum-spanning-tree ( @a Kruskal’s-algorithm ) and @b Dfs
+ * @b Kruskal’s-algorithm and @b Dfs
  * 
  * ----October 07, 2025 [12h:05m:05s]----
 */

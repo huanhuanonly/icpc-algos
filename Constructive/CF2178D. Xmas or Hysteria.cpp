@@ -1,7 +1,7 @@
 /**
  * Good Bye 2025
  * 
- * => D. Xmas or Hysteria ( @c Rating )
+ * => D. Xmas or Hysteria ( @c 1700 )
  * 
  * -> https://codeforces.com/contest/2178/problem/D
  * 

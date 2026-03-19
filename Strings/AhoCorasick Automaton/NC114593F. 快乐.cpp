@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 103
  * 
- * => F-快乐 ( @c 300 )
+ * => F-快乐 ( @c 2400 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/114593/F
  * 

@@ -1,7 +1,7 @@
 /**
  * Good Bye 2025
  * 
- * => F. Conquer or of Forest ( @c Rating )
+ * => F. Conquer or of Forest ( @c 2200 )
  * 
  * -> https://codeforces.com/contest/2178/problem/F
  * 

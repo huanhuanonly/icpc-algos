@@ -1,7 +1,7 @@
 /**
  * Codeforces Round 1071 (Div. 3)
  * 
- * => E. Blackslex and Girls ( @c Rating )
+ * => E. Blackslex and Girls ( @c 1800 )
  * 
  * -> https://codeforces.com/contest/2179/problem/E
  * 

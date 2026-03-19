@@ -1,7 +1,7 @@
 /**
  * Testing Round 20 (Unrated, Communication Problems)
  * 
- * => C. Intercepting Butterflies ( @c Rating )
+ * => C. Intercepting Butterflies
  * 
  * -> https://codeforces.com/contest/2168/problem/C
  * 

@@ -1,7 +1,7 @@
 /**
  * 牛客周赛 Round 103
  * 
- * => E-新婚 ( @c 250 )
+ * => E-新婚 ( @c 1700 )
  * 
  * -> https://ac.nowcoder.com/acm/contest/114593/E
  * 
