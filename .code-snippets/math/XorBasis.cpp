@@ -66,7 +66,7 @@ public:
 
     [[nodiscard]] constexpr size_type
     count() const noexcept
-    { return (1 << _M_size) - not _M_zero; }
+    { return (size_type{1} << _M_size) - not _M_zero; }
 
     [[nodiscard]] constexpr auto
     view() const noexcept
@@ -205,7 +205,7 @@ public:
         }
 
         value_type result{};
-        size_type  cnt = 1 << _M_size - 1;
+        size_type  cnt = size_type{1} << _M_size - 1;
 
         for (size_type i = static_cast<size_type>(_M_basis.size()); i--; )
         {
@@ -294,7 +294,7 @@ public:
         }
 
         value_type result{};
-        size_type cnt = 1 << _M_size - 1;
+        size_type cnt = size_type{1} << _M_size - 1;
 
         value_type mask{};
 
