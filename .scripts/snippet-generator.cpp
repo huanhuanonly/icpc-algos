@@ -243,6 +243,44 @@ protected:
 };
 }
 
+inline namespace huanhuanonly
+{
+class py_snippet_generator : public snippet_generator
+{
+protected:
+
+    virtual void
+    merge_module_to_snippet(const std::vector<std::string>& __module, std::string& __snippet) override
+    {
+        if (__module.empty())
+        {
+            return;
+        }
+
+        std::string s = "# module: ";
+
+        int i = 0;
+
+        for (const std::string& name : __module)
+        {
+            if (i)
+            {
+                s.append(" / ");
+            }
+
+            ++i;
+
+            s.append(name);
+        }
+
+        s.append("\n");
+        s.append(__snippet);
+
+        __snippet = std::move(s);
+    }
+};
+}
+
 [[nodiscard]] static std::string
 file_content(const std::filesystem::path& __path)
 {
@@ -336,6 +374,7 @@ main(int argc, char* argv[])
         }
         
         cpp_snippet_generator cpp_sg;
+        py_snippet_generator  py_sg;
 
         std::vector<std::string> module_name{ "huanhuanonly" };
 
@@ -355,9 +394,16 @@ main(int argc, char* argv[])
             }
             else if (e.is_regular_file())
             {
-                if (epath.extension() == ".cpp" or epath.extension() == ".hpp")
+                if (const std::string ext = epath.extension(); ext == ".cpp" or ext == ".hpp")
                 {
                     cpp_sg.append(module_name.back()[0] != '.' ? module_name : std::vector<std::string>{}, {
+                        .description = extract_description(epath.stem()),
+                        .tab_trigger = extract_tab_trigger(epath.stem()),
+                        .snippet = file_content(epath)});
+                }
+                else if (ext == ".py")
+                {
+                    py_sg.append(module_name.back()[0] != '.' ? module_name : std::vector<std::string>{}, {
                         .description = extract_description(epath.stem()),
                         .tab_trigger = extract_tab_trigger(epath.stem()),
                         .snippet = file_content(epath)});
@@ -370,10 +416,18 @@ main(int argc, char* argv[])
             }
         }
 
-        std::ofstream ofs(output_dir / "vscode.cpp.json", std::ios::binary);
-        cpp_sg.write(ofs, snippet_generator::vscode_json);
+        {
+            std::ofstream ofs(output_dir / "vscode.cpp.json", std::ios::binary);
+            cpp_sg.write(ofs, snippet_generator::vscode_json);
+        }
+
+        {
+            std::ofstream ofs(output_dir / "vscode.py.json", std::ios::binary);
+            py_sg.write(ofs, snippet_generator::vscode_json);
+        }
 
         std::cout << "+ vscode.cpp.json@" << cpp_sg.count() << '\n';
+        std::cout << "+ vscode.py.json@"  <<  py_sg.count() << '\n';
     }
     catch (const fs::filesystem_error& e)
     {
