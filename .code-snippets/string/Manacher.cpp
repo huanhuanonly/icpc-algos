@@ -54,11 +54,11 @@ public:
 
         for (size_type i = 0, l = 0, r = -1; i < n; ++i)
         {
-            even[i] = r < i ? 0 : std::min(even[l + r - i - 1], r - i);
+            even[i] = r <= i ? 0 : std::min(even[l + r - i - 1], r - i);
 
             for (; even[i] <= i and i + 1 + even[i] < n and __comp(__proj(*(__first + (i - even[i]))), __proj(*(__first + (i + 1 + even[i])))); ++even[i]);
 
-            if (r < i + even[i])
+            if (even[i] != 0 and r < i + even[i])
             {
                 l = i - (even[i] - 1);
                 r = i + even[i];
@@ -168,7 +168,7 @@ public:
     size() const noexcept(noexcept(odd.size()))
     { return static_cast<size_type>(odd.size()); }
 
-    [[nodiscard]] void
+    void
     clear() noexcept(noexcept(odd.clear()))
     { odd.clear(), even.clear(); }
 
