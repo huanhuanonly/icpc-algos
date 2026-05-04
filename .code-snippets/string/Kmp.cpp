@@ -4,7 +4,7 @@ public:
 
     using value_type = std::string::value_type;
     using size_type = int;
-    
+
     static constexpr size_type npos = size_type(-1);
 
     Kmp() noexcept = default;
@@ -16,11 +16,11 @@ public:
     [[nodiscard]] size_type
     size() const noexcept
     { return static_cast<size_type>(_M_pattern.size()); }
-    
+
     [[nodiscard]] bool
     empty() const noexcept
     { return size() == 0; }
-    
+
     [[nodiscard]] size_type
     longest_prefix_suffix(size_type __i) const noexcept
     { return _M_lps[__i]; }
@@ -32,7 +32,7 @@ public:
     [[nodiscard]] std::string_view
     pattern() const noexcept
     { return _M_pattern; }
-    
+
     [[nodiscard]] size_type
     find(std::string_view __s) const
     {
@@ -189,7 +189,7 @@ private:
     }
 
 private:
-    
+
     std::string _M_pattern;
     std::vector<size_type> _M_lps;
 };

@@ -44,7 +44,7 @@ public:
         _M_history.emplace(change_record{
                 {_M_tree[fv].parent, _M_tree[fv].parent},
                 {_M_tree[fu].size,   _M_tree[fu].size  }});
-        
+
         _M_tree[fv].parent = fu;
         _M_tree[fu].size += _M_tree[fv].size;
 

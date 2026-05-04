@@ -95,7 +95,7 @@ public:
 
     constexpr reference operator*() noexcept
     { return _M_value; }
-    
+
     constexpr const_reference operator*() const noexcept
     { return _M_value; }
 
@@ -128,7 +128,7 @@ public:
 
     constexpr StaticModular operator-(value_type __x) const noexcept
     { return _M_value + modulus() - residue(__x); }
-    
+
     constexpr StaticModular operator*(value_type __x) const noexcept
     { auto t = *this; t *= __x; return t; }
 
@@ -140,7 +140,7 @@ public:
 
     constexpr StaticModular& operator+=(value_type __x) noexcept
     { return *this = *this + __x; }
-    
+
     constexpr StaticModular& operator-=(value_type __x) noexcept
     { return *this = *this - __x; }
 
@@ -161,14 +161,14 @@ public:
         else
         {
             __x = residue(__x);
-    
+
             StaticModular result;
-    
+
             for (; __x; *this += *this, __x >>= 1)
             {
                 (__x & 1) ? void(result += *this) : void();
             }
-    
+
             return *this = result;
         }
     }

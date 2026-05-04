@@ -119,7 +119,7 @@ struct Fraction
     constexpr Fraction& operator--() noexcept
     {
         --numerator;
-        
+
         simplify();
         return *this;
     }

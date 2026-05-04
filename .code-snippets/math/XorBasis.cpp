@@ -59,7 +59,7 @@ public:
     [[nodiscard]] constexpr bool
     operator not() const noexcept
     { return empty(); }
-    
+
     [[nodiscard]] constexpr
     operator bool() const noexcept
     { return not empty(); }
@@ -217,7 +217,7 @@ public:
                     {
                         result ^= _M_basis[i];
                     }
-                    
+
                     __k -= cnt;
                 }
                 else if (_S_take(result, i))

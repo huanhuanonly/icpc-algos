@@ -5,7 +5,7 @@ requires
 class SpfaDinic
 {
 public:
-    
+
     using size_type = int;
     using capacity_type = _CapacityT;
     using cost_type = _CostT;
@@ -93,7 +93,7 @@ public:
     cost_type
     build_min_cost_graph(size_type __source, size_type __sink)
     { return build_cost_graph(__source, __sink, std::numeric_limits<cost_type>::max(), std::ranges::less{}); }
-    
+
     cost_type
     build_max_cost_graph(size_type __source, size_type __sink)
     { return build_cost_graph(__source, __sink, std::numeric_limits<cost_type>::min(), std::ranges::greater{}); }
@@ -122,7 +122,7 @@ public:
 
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
     }
-    
+
     cost_flow
     max_cost_feasible_flow(size_type __source, size_type __sink)
     {
@@ -130,7 +130,7 @@ public:
         {
             while (augment_flow(__source, __sink));
         }
-        
+
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
     }
 

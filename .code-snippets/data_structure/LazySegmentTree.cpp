@@ -63,7 +63,7 @@ public:
 
     using parent_type::size;
     using parent_type::nodes_count;
-    
+
     struct lazy_build_info
     {
         value_type& value;
@@ -85,7 +85,7 @@ protected:
     using parent_type::merge;
 
 public:
-    
+
     constexpr explicit
     LazySegmentTree(size_type __n = 0, _MergeFunc __merge = {}, _MakeLazyFunc __makelazy = {}) noexcept
         : parent_type(__n, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
@@ -112,7 +112,7 @@ public:
     constexpr void
     range_update(size_type __l, size_type __r, const lazy_type& __value)
     { _M_range_update(1, 1, size(), __l + 1, __r + 1, __value); }
-    
+
     constexpr void
     resize(size_type __n)
     {
@@ -154,7 +154,7 @@ protected:
 
             make_lazy(ls(__p), __l, mid, lazy[__p]);
             make_lazy(rs(__p), mid + 1, __r, lazy[__p]);
-            
+
             lazy[__p] = lazy_type{};
             marked[__p] = false;
         }
@@ -184,7 +184,7 @@ private:
         {
             _M_range_update(rs(__p), mid + 1, __r, __x, __y, __v);
         }
-        
+
         push_up(__p);
     }
 
