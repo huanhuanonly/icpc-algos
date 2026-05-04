@@ -53,13 +53,13 @@ public:
     resize(size_type __n)
     { tree.resize(nodes_count(__n)); }
 
-    
+
     template<typename _Callback>
     requires std::invocable<_Callback, reference>
     constexpr void
     for_each(size_type __l, size_type __r, _Callback __func)
     { _M_for_each(1, 1, size(), __l + 1, __r + 1, __func); }
-    
+
     template<typename _Callback>
     requires std::invocable<_Callback, reference>
     constexpr void
@@ -71,7 +71,7 @@ public:
     constexpr void
     for_each_segment(size_type __l, size_type __r, _Callback __func)
     { _M_for_each_segment(1, 1, size(), __l + 1, __r + 1, __func); }
-    
+
     template<typename _Callback>
     requires std::invocable<_Callback, reference>
     constexpr void
@@ -99,7 +99,7 @@ public:
     constexpr void
     build(size_type __l, size_type __r, _Range&& __range, _Proj __proj = {})
     { build(__l, __r, std::ranges::begin(__range), std::ranges::end(__range), __proj); }
-    
+
     template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
     requires std::assignable_from<reference, std::invoke_result_t<_Proj, std::iter_reference_t<_Iter>>>
     constexpr void
@@ -139,12 +139,143 @@ public:
     [[nodiscard]] constexpr value_type
     operator[](const std::pair<size_type, size_type>& __p)
     { return reduce(__p.first, __p.second); }
-    
+
+    struct recursion_info_probe
+    {
+        size_type l, r;
+
+        [[nodiscard]] constexpr bool
+        is_leaf() const noexcept;
+
+        [[nodiscard]] constexpr size_type
+        size() const noexcept;
+
+        [[nodiscard]] constexpr reference
+        left_value() const noexcept;
+
+        [[nodiscard]] constexpr reference
+        right_value() const noexcept;
+
+        struct return_placeholder
+        {
+            template<typename _Tp>
+            constexpr operator _Tp() const noexcept;
+        };
+
+        template<typename... _Args>
+        [[nodiscard]] constexpr return_placeholder
+        to_left(_Args&&...) const noexcept;
+
+        template<typename... _Args>
+        [[nodiscard]] constexpr return_placeholder
+        to_right(_Args&&...) const noexcept;
+    };
+
+    template<typename _Func, typename _Func1, typename _Func2, typename... _Args>
+    struct recursion_info
+    {
+    private: size_type p;
+    public:  size_type l, r;
+
+    private:
+
+        struct callbacks
+        {
+            _Func  func;
+            _Func1 ln_value;
+            _Func2 rn_value;
+        };
+
+        const callbacks& cb_refs;
+
+        constexpr
+        recursion_info(size_type p, size_type l, size_type r, const callbacks& cb_refs) noexcept
+            : p(p), l(l), r(r), cb_refs(cb_refs)
+        { }
+
+    public:
+
+        friend class SegmentTree;
+
+        [[nodiscard]] constexpr bool
+        is_leaf() const noexcept
+        { return l == r; }
+
+        [[nodiscard]] constexpr size_type
+        size() const noexcept
+        { return r - l + 1; }
+
+        [[nodiscard]] constexpr reference
+        left_value() const noexcept
+        { return cb_refs.ln_value(*this); }
+
+        [[nodiscard]] constexpr reference
+        right_value() const noexcept
+        { return cb_refs.rn_value(*this); }
+
+        constexpr decltype(auto)
+        to_left(_Args&&... __args) const noexcept
+        {
+            const size_type mid = (l + r) >> 1;
+            return cb_refs.func(recursion_info(ls(p), l, mid, cb_refs), std::forward<_Args>(__args)...);
+        }
+
+        constexpr decltype(auto)
+        to_right(_Args&&... __args) const noexcept
+        {
+            const size_type mid = (l + r) >> 1;
+            return cb_refs.func(recursion_info(rs(p), mid + 1, r, cb_refs), std::forward<_Args>(__args)...);
+        }
+    };
+
+    template<typename _Callback, typename... _Args>
+    constexpr decltype(auto)
+    recurse(_Callback __callback, _Args&&... __args)
+    {
+        using return_value_t = std::remove_cvref_t<std::invoke_result_t<_Callback, recursion_info_probe, reference, _Args...>>;
+
+        auto func = [this, &__callback](const auto& info, _Args&&... args) -> return_value_t
+        {
+            if constexpr (std::is_void_v<return_value_t>)
+            {
+                push_down(info.p, info.l, info.r);
+                __callback(info, tree[info.p], std::forward<_Args>(args)...);
+                push_up(info.p);
+            }
+            else
+            {
+                push_down(info.p, info.l, info.r);
+                auto&& ret = __callback(info, tree[info.p], std::forward<_Args>(args)...);
+                push_up(info.p);
+                return ret;
+            }
+        };
+
+        auto ln_value = [this](const auto& info) -> reference
+        {
+            const size_type mid = (info.l + info.r) >> 1;
+            push_down(ls(info.p), info.l, mid);
+            return tree[ls(info.p)];
+        };
+
+        auto rn_value = [this](const auto& info) -> reference
+        {
+            const size_type mid = (info.l + info.r) >> 1;
+            push_down(rs(info.p), mid + 1, info.r);
+            return tree[rs(info.p)];
+        };
+
+        recursion_info<decltype(func), decltype(ln_value), decltype(rn_value), _Args...> info(
+            1, 0, size() - 1, {func, ln_value, rn_value});
+
+        return func(info, std::forward<_Args>(__args)...);
+    }
+
 
     [[nodiscard]] constexpr const_reference
     front()
     { return at(0); }
-    
+
     [[nodiscard]] constexpr const_reference
     back()
     { return at(size() - 1); }
@@ -187,7 +318,7 @@ protected:
     { tree[__p] = merge(tree[ls(__p)], tree[rs(__p)]); }
 
     virtual void
-    push_down(size_type __p, size_type __l, size_type __r)
+    push_down([[maybe_unused]] size_type __p, [[maybe_unused]] size_type __l, [[maybe_unused]] size_type __r)
     { }
 
 private:
@@ -204,7 +335,7 @@ private:
 
         push_down(__p, __l, __r);
 
-        const size_type mid = __l + __r >> 1;
+        const size_type mid = (__l + __r) >> 1;
         bool continues = true;
 
         if (__x <= mid)
@@ -234,7 +365,7 @@ private:
 
         push_down(__p, __l, __r);
 
-        const size_type mid = __l + __r >> 1;
+        const size_type mid = (__l + __r) >> 1;
         bool continues = true;
 
         if (__x <= mid)
@@ -260,7 +391,7 @@ private:
 
         push_down(__p, __l, __r);
 
-        const size_type mid = __l + __r >> 1;
+        const size_type mid = (__l + __r) >> 1;
 
         if (__x <= mid and __y > mid)
         {
@@ -286,7 +417,7 @@ private:
 
         push_down(__p, __l, __r);
 
-        const size_type mid = __l + __r >> 1;
+        const size_type mid = (__l + __r) >> 1;
 
         if (__i <= mid)
         {
