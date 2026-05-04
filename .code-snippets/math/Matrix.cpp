@@ -283,10 +283,20 @@ public:
     semiring_multiply(const Matrix<_Tp2, _Cn, _Cn2, _DefaultVal2>& __rhs, _BinaryOperation1 __binary_op1 = {}, _BinaryOperation2 __binary_op2 = {}) const noexcept
     {
         using binary_operation2_result_t = std::remove_cvref_t<std::invoke_result_t<_BinaryOperation2, _Tp, _Tp2>>;
+        using binary_operation1_result_t = std::remove_cvref_t<std::invoke_result_t<_BinaryOperation1, binary_operation2_result_t, binary_operation2_result_t>>;
 
-        static_assert(requires(_BinaryOperation1 __op1, binary_operation2_result_t __x) { { __op1(__x, __x) } -> std::convertible_to<binary_operation2_result_t>; });
+        static_assert(std::invocable<_BinaryOperation1, binary_operation2_result_t, binary_operation2_result_t>);
+        static_assert(std::convertible_to<binary_operation1_result_t, binary_operation2_result_t>);
 
-        Matrix<binary_operation2_result_t, _Ln, _Cn2, _DefaultVal> result{};
+        using default_value_t = std::conditional_t<
+            std::is_same_v<binary_operation2_result_t, _Tp>,
+            _DefaultVal,
+            std::conditional_t<
+                std::is_same_v<binary_operation2_result_t, _Tp2>,
+                _DefaultVal2,
+                binary_operation2_result_t>>;
+
+        Matrix<binary_operation2_result_t, _Ln, _Cn2, default_value_t> result{};
 
         for (size_type i = 0; i < row(); ++i)
         {
