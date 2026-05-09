@@ -230,22 +230,27 @@ public:
 
     template<typename _Callback, typename... _Args>
     constexpr decltype(auto)
-    recurse(_Callback __callback, _Args&&... __args)
+    recurse(_Callback __func, _Args&&... __args)
     {
         using return_value_t = std::remove_cvref_t<std::invoke_result_t<_Callback, recursion_info_probe, reference, _Args...>>;
 
-        auto func = [this, &__callback](const auto& info, _Args&&... args) -> return_value_t
+        auto func = [this, &__func](const auto& info, _Args&&... args) -> return_value_t
         {
+            if (info.is_leaf())
+            {
+                return __func(info, tree[info.p], std::forward<_Args>(args)...);
+            }
+
             if constexpr (std::is_void_v<return_value_t>)
             {
-                push_down(info.p, info.l, info.r);
-                __callback(info, tree[info.p], std::forward<_Args>(args)...);
+                push_down(info.p, info.l + 1, info.r + 1);
+                __func(info, tree[info.p], std::forward<_Args>(args)...);
                 push_up(info.p);
             }
             else
             {
-                push_down(info.p, info.l, info.r);
-                auto&& ret = __callback(info, tree[info.p], std::forward<_Args>(args)...);
+                push_down(info.p, info.l + 1, info.r + 1);
+                auto&& ret = __func(info, tree[info.p], std::forward<_Args>(args)...);
                 push_up(info.p);
                 return ret;
             }
@@ -253,20 +258,22 @@ public:
 
         auto ln_value = [this](const auto& info) -> reference
         {
-            const size_type mid = (info.l + info.r) >> 1;
-            push_down(ls(info.p), info.l, mid);
+            const size_type mid = (info.l + info.r + 2) >> 1;
+            push_down(ls(info.p), info.l + 1, mid);
             return tree[ls(info.p)];
         };
 
         auto rn_value = [this](const auto& info) -> reference
         {
-            const size_type mid = (info.l + info.r) >> 1;
-            push_down(rs(info.p), mid + 1, info.r);
+            const size_type mid = (info.l + info.r + 2) >> 1;
+            push_down(rs(info.p), mid + 1, info.r + 1);
             return tree[rs(info.p)];
         };
 
-        recursion_info<decltype(func), decltype(ln_value), decltype(rn_value), _Args...> info(
-            1, 0, size() - 1, {func, ln_value, rn_value});
+        using recursion_info_t = recursion_info<decltype(func), decltype(ln_value), decltype(rn_value), _Args...>;
+
+        typename recursion_info_t::callbacks callbacks{func, ln_value, rn_value};
+        recursion_info_t info(1, 0, size() - 1, callbacks);
 
         return func(info, std::forward<_Args>(__args)...);
     }
