@@ -1,4 +1,4 @@
-struct MakeLazyFunc
+struct LazyOperation
 {
     struct Add
     {
@@ -37,7 +37,7 @@ struct MakeLazyFunc
         {
             that.value = that.merge(that.value, value);
 
-            if (that.marked)
+            if (that.has_lazy)
                 that.lazy = that.merge(that.lazy, value);
             else
                 that.lazy = value;
@@ -47,60 +47,66 @@ struct MakeLazyFunc
 
 template<
     typename _ValueType, typename _MergeFunc = std::plus<_ValueType>,
-    typename _LazyType = _ValueType, typename _MakeLazyFunc = MakeLazyFunc::RangeAdd>
+    typename _LazyType = _ValueType, typename _LazyOperation = LazyOperation::RangeAdd>
 class LazySegmentTree : public SegmentTree<_ValueType, _MergeFunc>
 {
 public:
 
-    using parent_type     = SegmentTree<_ValueType, _MergeFunc>;
+    using base_type       = SegmentTree<_ValueType, _MergeFunc>;
 
-    using container_type  = parent_type::container_type;
-    using value_type      = parent_type::value_type;
-    using lazy_type       = std::conditional_t<std::is_same_v<_ValueType, bool>, std::uint8_t, _LazyType>;
-    using reference       = parent_type::reference;
-    using const_reference = parent_type::const_reference;
-    using size_type       = parent_type::size_type;
+    using container_type  = base_type::container_type;
+    using value_type      = base_type::value_type;
+    using lazy_type       = std::conditional_t<std::is_same_v<_LazyType, bool>, std::uint8_t, _LazyType>;
+    using reference       = base_type::reference;
+    using const_reference = base_type::const_reference;
+    using size_type       = base_type::size_type;
 
-    using parent_type::size;
-    using parent_type::nodes_count;
+    using base_type::size;
+    using base_type::storage_size;
 
-    struct lazy_build_info
+    struct lazy_context
     {
         value_type& value;
         lazy_type&  lazy;
         _MergeFunc& merge;
 
         size_type size;
-        bool marked;
+        bool has_lazy;
     };
 
 protected:
 
-    using parent_type::ls;
-    using parent_type::rs;
+    using base_type::ls;
+    using base_type::rs;
 
-    using parent_type::push_up;
+    using base_type::push_up;
 
-    using parent_type::tree;
-    using parent_type::merge;
+    using base_type::tree;
+    using base_type::merge;
 
 public:
 
     constexpr explicit
-    LazySegmentTree(size_type __n = 0, _MergeFunc __merge = {}, _MakeLazyFunc __makelazy = {}) noexcept
-        : parent_type(__n, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
+    LazySegmentTree(size_type __n = 0, _MergeFunc __merge = {}, _LazyOperation __applytag = {}) noexcept
+        : base_type(__n, std::move(__merge))
+        , lazy(tree.size()), has_lazy(tree.size()), apply_tag(std::move(__applytag))
     { }
 
-    template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
+    template<std::forward_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
     constexpr
-    LazySegmentTree(_Iter __first, _Sent __last, _Proj __proj = {}, _MergeFunc __merge = {}, _MakeLazyFunc __makelazy = {}) noexcept
-        : parent_type(__first, __last, __proj, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
+    LazySegmentTree(
+        _Iter __first, _Sent __last, _Proj __proj = {},
+        _MergeFunc __merge = {}, _LazyOperation __applytag = {}) noexcept
+            : base_type(__first, __last, std::move(__proj), std::move(__merge))
+            , lazy(tree.size()), has_lazy(tree.size()), apply_tag(std::move(__applytag))
     { }
 
-    template<std::ranges::input_range _Range, typename _Proj = std::identity>
+    template<std::ranges::forward_range _Range>
     constexpr
-    LazySegmentTree(_Range&& __r, _Proj __proj = {}, _MergeFunc __merge = {}, _MakeLazyFunc __makelazy = {}) noexcept
-        : parent_type(std::ranges::begin(__r), std::ranges::end(__r), __proj, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
+    LazySegmentTree(
+        _Range&& __r, _MergeFunc __merge = {}, _LazyOperation __applytag = {}) noexcept
+            : base_type(std::ranges::begin(__r), std::ranges::end(__r), {}, std::move(__merge))
+            , lazy(tree.size()), has_lazy(tree.size()), apply_tag(std::move(__applytag))
     { }
 
     constexpr
@@ -110,23 +116,35 @@ public:
 
 
     constexpr void
-    range_update(size_type __l, size_type __r, const lazy_type& __value)
-    { _M_range_update(1, 1, size(), __l + 1, __r + 1, __value); }
-
-    constexpr void
-    resize(size_type __n)
+    range_apply(size_type __l, size_type __r, const lazy_type& __value)
     {
-        parent_type::resize(__n);
-        lazy.resize(nodes_count(__n));
-        marked.resize(nodes_count(__n));
+        assert(__l <= __r and 0 <= __l and __r < size());
+        _M_range_apply(1, 0, size() - 1, __l, __r, __value);
     }
 
     constexpr void
-    reset()
+    resize(size_type __n) override
     {
-        parent_type::reset();
+        if (size() < __n)
+        {
+            lazy.resize(storage_size(__n));
+            has_lazy.resize(storage_size(__n));
+            base_type::resize(__n);
+        }
+        else
+        {
+            base_type::resize(__n);
+            lazy.resize(tree.size());
+            has_lazy.resize(tree.size());
+        }
+    }
+
+    constexpr void
+    reset() override
+    {
+        base_type::reset();
         std::ranges::fill(lazy, lazy_type{});
-        marked.assign(marked.size(), false);
+        has_lazy.assign(has_lazy.size(), false);
     }
 
 protected:
@@ -134,21 +152,21 @@ protected:
     constexpr void
     make_lazy(size_type __p, size_type __l, size_type __r, const lazy_type& __value)
     {
-        make_lazy_func(lazy_build_info{
+        apply_tag(lazy_context{
             .value  = tree[__p],
             .lazy   = lazy[__p],
             .merge  = merge,
             .size   = __r - __l + 1,
-            .marked = marked[__p]
+            .has_lazy = has_lazy[__p]
         }, __value);
 
-        marked[__p] = true;
+        has_lazy[__p] = true;
     }
 
-    void
+    constexpr void
     push_down(size_type __p, size_type __l, size_type __r) override
     {
-        if (marked[__p])
+        if (__l < __r and has_lazy[__p])
         {
             const size_type mid = (__l + __r) >> 1;
 
@@ -156,14 +174,15 @@ protected:
             make_lazy(rs(__p), mid + 1, __r, lazy[__p]);
 
             lazy[__p] = lazy_type{};
-            marked[__p] = false;
+            has_lazy[__p] = false;
         }
     }
 
 private:
 
     constexpr void
-    _M_range_update(size_type __p, size_type __l, size_type __r, size_type __x, size_type __y, const lazy_type& __v)
+    _M_range_apply(
+        size_type __p, size_type __l, size_type __r, size_type __x, size_type __y, const lazy_type& __v)
     {
         if (__x <= __l and __r <= __y)
         {
@@ -177,12 +196,12 @@ private:
 
         if (__x <= mid)
         {
-            _M_range_update(ls(__p), __l, mid, __x, __y, __v);
+            _M_range_apply(ls(__p), __l, mid, __x, __y, __v);
         }
 
         if (__y > mid)
         {
-            _M_range_update(rs(__p), mid + 1, __r, __x, __y, __v);
+            _M_range_apply(rs(__p), mid + 1, __r, __x, __y, __v);
         }
 
         push_up(__p);
@@ -191,13 +210,23 @@ private:
 protected:
 
     std::vector<lazy_type> lazy;
-    std::vector<bool> marked;
+    std::vector<bool> has_lazy;
 
-    _MakeLazyFunc make_lazy_func;
+    [[no_unique_address]] _LazyOperation apply_tag;
 };
 
-template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity, typename _MergeFunc = std::plus<>, typename _MakeLazyFunc = MakeLazyFunc::RangeAdd>
-LazySegmentTree(_Iter, _Sent, _Proj = {}, _MergeFunc = {}, _MakeLazyFunc = {}) -> LazySegmentTree<std::remove_reference_t<std::invoke_result_t<_Proj, std::iter_value_t<_Iter>>>, _MergeFunc, std::remove_reference_t<std::invoke_result_t<_Proj, std::iter_value_t<_Iter>>>, _MakeLazyFunc>;
+template<
+    std::forward_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity,
+    typename _MergeFunc = std::plus<>, typename _LazyOperation = LazyOperation::RangeAdd>
+LazySegmentTree(_Iter, _Sent, _Proj = {}, _MergeFunc = {}, _LazyOperation = {}) ->
+    LazySegmentTree<
+        std::remove_cvref_t<std::invoke_result_t<_Proj&, std::iter_reference_t<_Iter>>>, _MergeFunc,
+        std::remove_cvref_t<std::invoke_result_t<_Proj&, std::iter_reference_t<_Iter>>>, _LazyOperation>;
 
-template<std::ranges::input_range _Range, typename _Proj = std::identity, typename _MergeFunc = std::plus<>, typename _MakeLazyFunc = MakeLazyFunc::RangeAdd>
-LazySegmentTree(_Range&&, _Proj = {}, _MergeFunc = {}, _MakeLazyFunc = {}) -> LazySegmentTree<std::remove_reference_t<std::invoke_result_t<_Proj, std::ranges::range_value_t<_Range>>>, _MergeFunc, std::remove_reference_t<std::invoke_result_t<_Proj, std::ranges::range_value_t<_Range>>>, _MakeLazyFunc>;
+template<
+    std::ranges::forward_range _Range,
+    typename _MergeFunc = std::plus<>, typename _LazyOperation = LazyOperation::RangeAdd>
+LazySegmentTree(_Range&&, _MergeFunc = {}, _LazyOperation = {}) ->
+    LazySegmentTree<
+        std::ranges::range_value_t<_Range>, _MergeFunc,
+        std::ranges::range_value_t<_Range>, _LazyOperation>;
