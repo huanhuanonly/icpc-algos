@@ -1,8 +1,8 @@
-template<typename _Tp, typename _St = std::size_t, _St _Size = sizeof(_Tp) * 8>
+template<typename _Tp, std::unsigned_integral _St = std::size_t, _St _Bits = sizeof(_Tp) * 8>
 requires requires(_Tp __x, _St __n) {
-    {__x ^ __x} -> std::same_as<_Tp>;
-    {__x & __x} -> std::same_as<_Tp>;
-    {__x >> __n} -> std::same_as<_Tp>;
+    {__x ^ __x} -> std::convertible_to<_Tp>;
+    {__x & __x} -> std::convertible_to<_Tp>;
+    {__x >> __n} -> std::convertible_to<_Tp>;
     {__x == __x} -> std::same_as<bool>;
     {__x ^= __x} -> std::same_as<_Tp&>; }
 class XorBasis
@@ -14,7 +14,7 @@ public:
 
     constexpr
     XorBasis() noexcept
-        : _M_basis{}, _M_size(0), _M_zero(false)
+        : _M_basis{}, _M_rank(0), _M_zero(false)
     { }
 
     template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
@@ -37,46 +37,56 @@ public:
 
     [[nodiscard]] constexpr bool
     operator==(const XorBasis& __other) const noexcept
-    { return _M_zero == __other._M_zero and std::ranges::equal(_M_basis, __other._M_basis, {}, _S_check); }
+    {
+        if (rank() != __other.rank() or _M_zero != __other._M_zero)
+        {
+            return false;
+        }
 
-    [[nodiscard]] constexpr bool
-    operator!=(const XorBasis& __other) const noexcept
-    { return not (*this == __other); }
+        for (const auto& x : _M_basis)
+        {
+            if (_S_check(x) and not __other.contains(x))
+            {
+                return false;
+            }
+        }
 
+        return true;
+    }
 
     [[nodiscard]] static constexpr size_type
-    bit_count() noexcept
-    { return _Size; }
+    bit_width() noexcept
+    { return _Bits; }
 
     [[nodiscard]] constexpr size_type
-    size() const noexcept
-    { return _M_size; }
+    rank() const noexcept
+    { return _M_rank; }
 
     [[nodiscard]] constexpr bool
     empty() const noexcept
-    { return _M_size == size_type{} and _M_zero == false; }
+    { return not rank() and _M_zero == false; }
 
     [[nodiscard]] constexpr bool
     operator not() const noexcept
     { return empty(); }
 
-    [[nodiscard]] constexpr
+    [[nodiscard]] constexpr explicit
     operator bool() const noexcept
     { return not empty(); }
 
     [[nodiscard]] constexpr size_type
     count() const noexcept
-    { return (size_type{1} << _M_size) - not _M_zero; }
+    { return (size_type{1} << rank()) - not _M_zero; }
 
     [[nodiscard]] constexpr auto
     view() const noexcept
-    { return _M_basis | std::views::filter([](value_type i) -> bool { return static_cast<bool>(i); }); }
+    { return _M_basis | std::views::filter(&_S_check); }
 
     constexpr void
     clear() noexcept
     {
         _M_basis.fill(value_type{});
-        _M_size = size_type{};
+        _M_rank = size_type{};
         _M_zero = false;
     }
 
@@ -94,7 +104,7 @@ public:
                 else
                 {
                     _M_basis[i] = __value;
-                    ++_M_size;
+                    ++_M_rank;
                     return true;
                 }
             }
@@ -106,7 +116,7 @@ public:
 
     template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
     constexpr size_type
-    insert(_Iter __first, _Sent __last, _Proj __proj = {}) noexcept
+    insert(_Iter __first, _Sent __last, _Proj __proj = {})
     {
         size_type n{};
 
@@ -132,7 +142,7 @@ public:
             {
                 for (size_type j = i; j--; )
                 {
-                    if (_S_check(_M_basis[j]))
+                    if (_S_check(_M_basis[j]) and _S_take(_M_basis[i], j))
                     {
                         _M_basis[i] ^= _M_basis[j];
                     }
@@ -168,12 +178,17 @@ public:
     }
 
     [[nodiscard]] constexpr value_type
-    find_min_xor_sum() const noexcept
-    { return _M_zero ? value_type{} : *std::ranges::find(_M_basis, true, _S_check); }
+    min_subset_xor() const noexcept
+    {
+        assert(not empty());
+        return _M_zero ? value_type{} : *std::ranges::find(_M_basis, true, _S_check);
+    }
 
     [[nodiscard]] constexpr value_type
-    find_max_xor_sum() const noexcept
+    max_subset_xor() const noexcept
     {
+        assert(not empty());
+
         value_type max{};
 
         for (size_type i = static_cast<size_type>(_M_basis.size()); i--; )
@@ -205,7 +220,7 @@ public:
         }
 
         value_type result{};
-        size_type  cnt = size_type{1} << _M_size - 1;
+        size_type  cnt = size_type{1} << rank() - 1;
 
         for (size_type i = static_cast<size_type>(_M_basis.size()); i--; )
         {
@@ -235,12 +250,12 @@ public:
     [[nodiscard]] constexpr value_type
     find_kth_largest(size_type __k) const noexcept
     {
-        assert(count() >= 1 + __k);
+        assert(__k < count());
         return find_kth_smallest(count() - 1 - __k);
     }
 
     [[nodiscard]] constexpr value_type
-    find_kth_smallest_after_normalization(size_type __k) const noexcept
+    kth_smallest_normalized(size_type __k) const noexcept
     {
         assert(__k >= 0 and __k < count());
 
@@ -275,26 +290,26 @@ public:
     }
 
     [[nodiscard]] constexpr value_type
-    find_kth_largest_after_normalization(size_type __k) const noexcept
+    kth_largest_normalized(size_type __k) const noexcept
     {
-        assert(count() >= 1 + __k);
-        return find_kth_smallest_after_normalization(count() - 1 - __k);
+        assert(__k < count());
+        return kth_smallest_normalized(count() - 1 - __k);
     }
 
     [[nodiscard]] constexpr size_type
-    count_le(const value_type& __value) const noexcept
+    count_lt(const value_type& __value) const noexcept
     {
-        if (__value <= 0)
+        if (not _S_check(__value))
         {
             return size_type{};
         }
-        else if (_M_size == 0)
+        else if (not rank())
         {
             return _M_zero;
         }
 
-        value_type result{};
-        size_type cnt = size_type{1} << _M_size - 1;
+        size_type result{};
+        size_type cnt = size_type{1} << rank() - 1;
 
         value_type mask{};
 
@@ -322,7 +337,7 @@ public:
             {
                 if (lb)
                 {
-                    result += cnt << 1;
+                    result += cnt ? cnt << 1 : size_type{1};
                 }
 
                 break;
@@ -333,16 +348,16 @@ public:
     }
 
     [[nodiscard]] constexpr size_type
-    count_leq(const value_type& __value) const noexcept
-    { return count_le(__value) + contains(__value); }
+    count_le(const value_type& __value) const noexcept
+    { return count_lt(__value) + contains(__value); }
+
+    [[nodiscard]] constexpr size_type
+    count_gt(const value_type& __value) const noexcept
+    { return count() - count_le(__value); }
 
     [[nodiscard]] constexpr size_type
     count_ge(const value_type& __value) const noexcept
-    { return count() - count_leq(__value); }
-
-    [[nodiscard]] constexpr size_type
-    count_geq(const value_type& __value) const noexcept
-    { return count() - count_le(__value); }
+    { return count() - count_lt(__value); }
 
 
     [[nodiscard]] constexpr std::optional<value_type>
@@ -360,7 +375,7 @@ public:
             }
         }
 
-        if (const size_type cid = count_le(__value); cid >= __n) [[likely]]
+        if (const size_type cid = count_lt(__value); cid >= __n) [[likely]]
         {
             return find_kth_smallest(cid - __n);
         }
@@ -385,7 +400,7 @@ public:
             }
         }
 
-        if (const size_type cid = count_ge(__value); cid >= __n) [[likely]]
+        if (const size_type cid = count_gt(__value); cid >= __n) [[likely]]
         {
             return find_kth_largest(cid - __n);
         }
@@ -397,17 +412,17 @@ public:
 
     [[nodiscard]] constexpr value_type
     operator[](std::make_signed_t<size_type> __n) const noexcept
-    { return __n >= 0 ? find_kth_smallest(size_type(__n)) : find_kth_largest(size_type(-__n - 1)); }
+    { return __n >= 0 ? find_kth_smallest(size_type(__n)) : find_kth_largest(size_type(-(__n + 1))); }
 
 
     constexpr void
     merge(const XorBasis& __other) noexcept
     {
-        for (size_type i = 0; i < static_cast<size_type>(_M_basis.size()); ++i)
+        for (const auto& x : __other._M_basis)
         {
-            if (_S_check(__other._M_basis[i]))
+            if (_S_check(x))
             {
-                insert(__other._M_basis[i]);
+                insert(x);
             }
         }
 
@@ -455,51 +470,28 @@ protected:
 
 private:
 
-    std::array<value_type, bit_count()> _M_basis;
-    size_type _M_size;
+    std::array<value_type, bit_width()> _M_basis;
+    size_type _M_rank;
     bool _M_zero;
 };
 
 template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
-XorBasis(_Iter, _Sent, _Proj = {}) -> XorBasis<std::remove_reference_t<std::invoke_result_t<_Proj, std::iter_reference_t<_Iter>>>>;
+XorBasis(_Iter, _Sent, _Proj = {}) ->
+    XorBasis<std::remove_cvref_t<std::indirect_result_t<_Proj&, _Iter>>>;
 
 template<std::ranges::input_range _Range, typename _Proj = std::identity>
-XorBasis(_Range&&, _Proj = {}) -> XorBasis<std::remove_reference_t<std::invoke_result_t<_Proj, std::iter_reference_t<decltype(std::ranges::begin(std::declval<_Range>()))>>>>;
+XorBasis(_Range&&, _Proj = {}) ->
+    XorBasis<std::remove_cvref_t<std::indirect_result_t<_Proj&, std::ranges::iterator_t<_Range>>>>;
 
 template<std::size_t _Size>
 [[nodiscard]] constexpr std::strong_ordering
 operator<=>(const std::bitset<_Size>& __lhs, const std::bitset<_Size>& __rhs) noexcept
 {
-    constexpr auto n = sizeof(std::bitset<_Size>);
-
-    if constexpr (n % sizeof(std::uint64_t) == 0)
+    for (std::size_t i = _Size; i--; )
     {
-        constexpr auto c = n / sizeof(std::uint64_t);
-
-        auto lptr = reinterpret_cast<const std::uint64_t*>(&__lhs) + c - 1;
-        auto rptr = reinterpret_cast<const std::uint64_t*>(&__rhs) + c - 1;
-
-        for (auto i = 0; i < c; ++i, --lptr, --rptr)
+        if (const bool a = __lhs.test(i), b = __rhs.test(i); a != b)
         {
-            if (*lptr != *rptr)
-            {
-                return *lptr < *rptr ? std::strong_ordering::less : std::strong_ordering::greater;
-            }
-        }
-    }
-    else
-    {
-        constexpr auto c = n / sizeof(std::uint32_t);
-
-        auto lptr = reinterpret_cast<const std::uint32_t*>(&__lhs) + c - 1;
-        auto rptr = reinterpret_cast<const std::uint32_t*>(&__rhs) + c - 1;
-
-        for (auto i = 0; i < c; ++i, --lptr, --rptr)
-        {
-            if (*lptr != *rptr)
-            {
-                return *lptr < *rptr ? std::strong_ordering::less : std::strong_ordering::greater;
-            }
+            return a ? std::strong_ordering::greater : std::strong_ordering::less;
         }
     }
 
