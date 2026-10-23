@@ -7,6 +7,11 @@ requires
 [[nodiscard]] constexpr _Tp
 binary_exponentiation(_Tp __lhs, _Up __rhs, _Mp __mod, _MulOp __mul_op = {}, _ModOp __mod_op = {})
 {
+    if (__mod == 1)
+    {
+        return 0;
+    }
+
     auto result = static_cast<_Tp>(1);
 
     for (__lhs = __mod_op(__lhs, __mod); __rhs; __lhs = __mod_op(__mul_op(__lhs, __lhs), __mod), __rhs >>= 1)

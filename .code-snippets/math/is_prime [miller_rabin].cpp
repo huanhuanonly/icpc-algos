@@ -1,40 +1,58 @@
-template<typename _Tp>
-[[nodiscard]] constexpr bool is_prime(_Tp __n)
+template <std::integral _Tp>
+[[nodiscard]] constexpr bool
+is_prime(_Tp __n)
 {
-    constexpr std::array<_Tp, 7> primes{2, 3, 5, 7, 11, 13, 17};
+    static_assert(sizeof(_Tp) <= sizeof(uint64_t));
+
+    constexpr std::array<uint64_t, 7> primes{
+        2, 325, 9375, 28178, 450775, 9780504, 1795265022
+    };
 
     if (__n <= 1)
     {
         return false;
     }
-
-    _Tp t = __n - 1, k = 0;
-
-    for (; (t & 1) == 0; t >>= 1, ++k);
-
-    for (_Tp i = 0; i < primes.size(); ++i)
+    else if (not (__n & 1))
     {
-        if (__n == primes[i])
+        return __n == 2;
+    }
+
+    const auto n = static_cast<uint64_t>(__n);
+
+    uint64_t t = n - 1, k = 0;
+    for (; not (t & 1); t >>= 1, ++k);
+
+    for (const auto& p : primes)
+    {
+        const uint64_t a = p % n;
+
+        if (a == 0)
         {
-            return true;
+            continue;
         }
 
-        _Tp x = binary_exponentiation(primes[i], t, __n);
-        _Tp next = x;
+        uint64_t x = static_cast<uint64_t>(binary_exponentiation(
+            static_cast<__uint128_t>(a), static_cast<__uint128_t>(t), static_cast<__uint128_t>(n)));
 
-        for (_Tp j = 1; j <= k; ++j)
+        if (x == 1 || x == n - 1)
         {
-            next = (x * x) % __n;
+            continue;
+        }
 
-            if (next == 1 and x != 1 and x != __n - 1)
+        bool ok = false;
+
+        for (uint64_t j = 1; j < k; ++j)
+        {
+            x = static_cast<uint64_t>(static_cast<__uint128_t>(x) * x % n);
+
+            if (x == n - 1)
             {
-                return false;
+                ok = true;
+                break;
             }
-
-            x = next;
         }
 
-        if (x != 1)
+        if (!ok)
         {
             return false;
         }
