@@ -1,5 +1,6 @@
 template<typename _Tp>
-[[nodiscard]] constexpr bool is_prime(_Tp __n)
+[[nodiscard]] constexpr bool
+is_prime(_Tp __n) noexcept
 {
     if (__n <= 3)
     {
@@ -10,7 +11,7 @@ template<typename _Tp>
         return false;
     }
 
-    for (_Tp i = 5; i * i <= __n; i += 6)
+    for (_Tp i = 5; i <= __n / i; i += 6)
     {
         if (__n % i == 0 or __n % (i + 2) == 0)
         {

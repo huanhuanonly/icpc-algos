@@ -1,8 +1,12 @@
 template<typename _Tp>
-[[nodiscard]] _Tp euler_phi(_Tp __n)
+[[nodiscard]] constexpr _Tp
+euler_phi(_Tp __n) noexcept
 {
+    assert(__n > 0);
+
     _Tp result = __n;
-    for (_Tp i = 2; i * i <= __n; ++i)
+
+    for (_Tp i = 2; i <= __n / i; ++i)
     {
         if (__n % i == 0)
         {

@@ -1,12 +1,12 @@
 template<typename _Tp>
-[[nodiscard]] std::vector<_Tp>
+[[nodiscard]] constexpr std::vector<_Tp>
 prime_factorization(_Tp __n, bool __unique = false)
 {
     std::vector<_Tp> res;
 
     if (__unique)
     {
-        for (_Tp i = 2; i * i <= __n; ++i)
+        for (_Tp i = 2; i <= __n / i; ++i)
         {
             if (__n % i == 0)
             {
@@ -18,7 +18,7 @@ prime_factorization(_Tp __n, bool __unique = false)
     }
     else
     {
-        for (_Tp i = 2; i * i <= __n; ++i)
+        for (_Tp i = 2; i <= __n / i; ++i)
         {
             for (; __n % i == 0; __n /= i)
             {
@@ -27,7 +27,7 @@ prime_factorization(_Tp __n, bool __unique = false)
         }
     }
 
-    if (__n != 1)
+    if (__n > 1)
     {
         res.push_back(__n);
     }
