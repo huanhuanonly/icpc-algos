@@ -8,7 +8,7 @@ public:
 
     template<
         std::random_access_iterator _Iter,
-        std::sized_sentinel_for<_Iter> _Sent,
+        std::sentinel_for<_Iter> _Sent,
         typename _Comp = std::ranges::equal_to,
         typename _Proj = std::identity>
     requires
@@ -17,7 +17,7 @@ public:
     { build(__first, __last, __comp, __proj); }
 
     template<
-        std::ranges::sized_range _Range,
+        std::ranges::random_access_range _Range,
         typename _Comp = std::ranges::equal_to,
         typename _Proj = std::identity>
     Manacher(_Range&& __r, _Comp __comp = {}, _Proj __proj = {})
@@ -26,7 +26,7 @@ public:
 
     template<
         std::random_access_iterator _Iter,
-        std::sized_sentinel_for<_Iter> _Sent,
+        std::sentinel_for<_Iter> _Sent,
         typename _Comp = std::ranges::equal_to,
         typename _Proj = std::identity>
     requires
@@ -43,7 +43,10 @@ public:
         {
             odd[i] = r < i ? 1 : std::min(odd[l + r - i], r - i + 1);
 
-            for (; odd[i] <= i and i + odd[i] < n and __comp(__proj(*(__first + (i - odd[i]))), __proj(*(__first + (i + odd[i])))); ++odd[i]);
+            for (; odd[i] <= i and i + odd[i] < n and
+                __comp(
+                    std::invoke(__proj, *(__first + (i - odd[i]))),
+                    std::invoke(__proj, *(__first + (i + odd[i])))); ++odd[i]);
 
             if (r < i + (odd[i] - 1))
             {
@@ -56,7 +59,10 @@ public:
         {
             even[i] = r <= i ? 0 : std::min(even[l + r - i - 1], r - i);
 
-            for (; even[i] <= i and i + 1 + even[i] < n and __comp(__proj(*(__first + (i - even[i]))), __proj(*(__first + (i + 1 + even[i])))); ++even[i]);
+            for (; even[i] <= i and i + 1 + even[i] < n and
+                __comp(
+                    std::invoke(__proj, *(__first + (i - even[i]))),
+                    std::invoke(__proj, *(__first + (i + 1 + even[i])))); ++even[i]);
 
             if (even[i] != 0 and r < i + even[i])
             {
@@ -67,12 +73,12 @@ public:
     }
 
     template<
-        std::ranges::sized_range _Range,
+        std::ranges::random_access_range _Range,
         typename _Comp = std::ranges::equal_to,
         typename _Proj = std::identity>
     void
     build(_Range&& __r, _Comp __comp = {}, _Proj __proj = {})
-    { build(std::ranges::begin(__r), std::ranges::end(__r), __comp, __proj); }
+    { build(std::ranges::begin(__r), std::ranges::end(__r), std::move(__comp), std::move(__proj)); }
 
 
     [[nodiscard]] size_type
@@ -153,9 +159,14 @@ public:
      */
     [[nodiscard]] std::pair<size_type, size_type>
     longest_palindrome() const noexcept
-    { return std::ranges::max(longest_odd_palindrome(), longest_even_palindrome(), {}, &std::pair<size_type, size_type>::second); }
+    {
+        return std::ranges::max(
+            longest_odd_palindrome(),
+            longest_even_palindrome(),
+            {}, &std::pair<size_type, size_type>::second);
+    }
 
-    template<typename _Result = size_type>
+    template<typename _Result = int64_t>
     [[nodiscard]] _Result
     count() const noexcept
     { return std::reduce(odd.begin(), odd.end(), std::reduce(even.begin(), even.end(), _Result{})); }
