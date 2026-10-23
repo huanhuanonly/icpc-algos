@@ -13,7 +13,7 @@ public:
     using container_type = std::array<std::array<value_type, _Cn>, _Ln>;
 
     constexpr
-    Matrix() noexcept
+    Matrix()
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -25,7 +25,7 @@ public:
     }
 
     constexpr
-    Matrix(const value_type& __value) noexcept
+    Matrix(const value_type& __value)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -44,17 +44,26 @@ public:
     }
 
     constexpr
-    Matrix(std::initializer_list<std::initializer_list<_Tp>> __init) noexcept
+    Matrix(std::initializer_list<std::initializer_list<_Tp>> __init)
     {
-        assert(static_cast<std::size_t>(row()) == __init.size());
+        if (static_cast<std::size_t>(row()) != __init.size())
+        {
+            throw std::invalid_argument("Matrix: invalid row count");
+        }
+
+        for (const auto& __row : __init)
+        {
+            if (static_cast<std::size_t>(column()) != __row.size())
+            {
+                throw std::invalid_argument("Matrix: invalid column count");
+            }
+        }
 
         auto lit = _M_m.begin();
         auto rit = __init.begin();
 
         for (; lit != _M_m.end(); ++lit, ++rit)
         {
-            assert(static_cast<std::size_t>(column()) == rit->size());
-
             auto lit2 = lit->begin();
             auto rit2 = rit->begin();
 
@@ -65,9 +74,11 @@ public:
         }
     }
 
-    template<std::convertible_to<_Tp> _Tp2, typename _DefaultVal2>
+    template<typename _Tp2, typename _DefaultVal2>
+    requires requires(_Tp& __dst, const _Tp2& __src)
+    { __dst = __src; }
     constexpr
-    Matrix(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __other) noexcept
+    Matrix(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __other)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -78,9 +89,11 @@ public:
         }
     }
 
-    template<std::convertible_to<_Tp> _Tp2, typename _DefaultVal2>
+    template<typename _Tp2, typename _DefaultVal2>
+    requires requires(_Tp& __dst, const _Tp2& __src)
+    { __dst = __src; }
     constexpr Matrix&
-    operator=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __other) noexcept
+    operator=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __other)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -93,9 +106,11 @@ public:
         return *this;
     }
 
-    template<std::convertible_to<_Tp> _Tp2, typename _DefaultVal2>
+    template<typename _Tp2, typename _DefaultVal2>
+    requires requires(_Tp& __dst, _Tp2&& __src)
+    { __dst = std::move(__src); }
     constexpr
-    Matrix(Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>&& __other) noexcept
+    Matrix(Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>&& __other)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -106,9 +121,11 @@ public:
         }
     }
 
-    template<std::convertible_to<_Tp> _Tp2, typename _DefaultVal2>
+    template<typename _Tp2, typename _DefaultVal2>
+    requires requires(_Tp& __dst, _Tp2&& __src)
+    { __dst = std::move(__src); }
     constexpr Matrix&
-    operator=(Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>&& __other) noexcept
+    operator=(Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>&& __other)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -120,10 +137,11 @@ public:
 
         return *this;
     }
+
     static constexpr struct uninitialized_t { } uninitialized{};
 
     constexpr explicit
-    Matrix(uninitialized_t) noexcept
+    Matrix(uninitialized_t)
     { }
 
     [[nodiscard]] static constexpr size_type
@@ -135,8 +153,8 @@ public:
     { return _Cn; }
 
     [[nodiscard]] static constexpr value_type
-    default_value() noexcept
-    { return static_cast<value_type>(_DefaultVal{}); }
+    default_value()
+    { return static_cast<value_type>(_DefaultVal()); }
 
     [[nodiscard]] constexpr container_type&
     data() noexcept
@@ -147,12 +165,12 @@ public:
     { return _M_m; }
 
     [[nodiscard]] constexpr reference
-    at(size_type __i, size_type __j) noexcept
-    { return _M_m[__i][__j]; }
+    at(size_type __i, size_type __j)
+    { return _M_m.at(__i).at(__j); }
 
     [[nodiscard]] constexpr const_reference
-    at(size_type __i, size_type __j) const noexcept
-    { return _M_m[__i][__j]; }
+    at(size_type __i, size_type __j) const
+    { return _M_m.at(__i).at(__j); }
 
     [[nodiscard]] constexpr decltype(auto)
     operator[](size_type __i) noexcept
@@ -163,7 +181,7 @@ public:
     { return _M_m[__i]; }
 
     constexpr void
-    fill(const value_type& __value) noexcept
+    fill(const value_type& __value)
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -178,13 +196,21 @@ public:
     friend class Matrix;
 
     template<typename _UnaryOperation>
-    requires requires(_UnaryOperation __op, _Tp __x) { __op(__x); }
+    requires requires(_UnaryOperation& __op, const _Tp& __x)
+    { __op(__x); }
     [[nodiscard]] constexpr auto
-    elementwise_transform(_UnaryOperation __unary_op = {}) const noexcept
+    elementwise_transform(_UnaryOperation __unary_op = {}) const
     {
-        using unary_operation_result_t = std::remove_cvref_t<std::invoke_result_t<_UnaryOperation, _Tp>>;
+        using unary_operation_result_t =
+            std::remove_cvref_t<std::invoke_result_t<_UnaryOperation&, const _Tp&>>;
 
-        Matrix<unary_operation_result_t, _Ln, _Cn, _DefaultVal> result(uninitialized);
+        using default_value_t = std::conditional_t<
+            std::is_same_v<unary_operation_result_t, _Tp>,
+            _DefaultVal,
+            unary_operation_result_t>;
+
+        using result_type = Matrix<unary_operation_result_t, _Ln, _Cn, default_value_t>;
+        result_type result(result_type::uninitialized);
 
         for (size_type i = 0; i < row(); ++i)
         {
@@ -198,9 +224,10 @@ public:
     }
 
     template<typename _UnaryOperation>
-    requires requires(_UnaryOperation __op, _Tp __x) { { __op(__x) } -> std::convertible_to<_Tp>; }
+    requires requires(_UnaryOperation& __op, _Tp& __x)
+    { __x = __op(__x); }
     constexpr Matrix&
-    elementwise_transform_inplace(_UnaryOperation __unary_op = {}) noexcept
+    elementwise_transform_inplace(_UnaryOperation __unary_op = {})
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -214,11 +241,19 @@ public:
     }
 
     template<typename _BinaryOperation, typename _Tp2, typename _DefaultVal2>
-    requires requires(_BinaryOperation __op, _Tp __lhs, _Tp2 __rhs) { __op(__lhs, __rhs); }
+    requires requires(_BinaryOperation& __op, const _Tp& __lhs, const _Tp2& __rhs)
+    { __op(__lhs, __rhs); }
     [[nodiscard]] constexpr auto
-    elementwise_transform(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs, _BinaryOperation __binary_op = {}) const noexcept
+    elementwise_transform(
+        const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs,
+        _BinaryOperation __binary_op = {}) const
     {
-        using binary_operation_result_t = std::remove_cvref_t<std::invoke_result_t<_BinaryOperation, _Tp, _Tp2>>;
+        using binary_operation_result_t =
+            std::remove_cvref_t<std::invoke_result_t<
+                _BinaryOperation&,
+                const _Tp&,
+                const _Tp2&>>;
+
         using default_value_t =
             std::conditional_t<
                 std::is_same_v<binary_operation_result_t, _Tp>,
@@ -228,7 +263,8 @@ public:
                     _DefaultVal2,
                     binary_operation_result_t>>;
 
-        Matrix<binary_operation_result_t, _Ln, _Cn, default_value_t> result(uninitialized);
+        using result_type = Matrix<binary_operation_result_t, _Ln, _Cn, default_value_t>;
+        result_type result(result_type::uninitialized);
 
         for (size_type i = 0; i < row(); ++i)
         {
@@ -242,9 +278,12 @@ public:
     }
 
     template<typename _BinaryOperation, typename _Tp2, typename _DefaultVal2>
-    requires requires(_BinaryOperation __op, _Tp __lhs, _Tp2 __rhs) { { __op(__lhs, __rhs) } -> std::convertible_to<_Tp>; }
+    requires requires(_BinaryOperation& __op, _Tp& __lhs, const _Tp2& __rhs)
+    { __lhs = __op(__lhs, __rhs); }
     constexpr Matrix&
-    elementwise_transform_inplace(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs, _BinaryOperation __binary_op = {}) noexcept
+    elementwise_transform_inplace(
+        const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs,
+        _BinaryOperation __binary_op = {})
     {
         for (size_type i = 0; i < row(); ++i)
         {
@@ -259,34 +298,50 @@ public:
 
     template<typename _Tp2, typename _DefaultVal2>
     [[nodiscard]] constexpr auto
-    operator+(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) const noexcept
+    operator+(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) const
     { return elementwise_transform(__rhs, std::plus{}); }
 
     template<typename _Tp2, typename _DefaultVal2>
     [[nodiscard]] constexpr auto
-    operator-(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) const noexcept
+    operator-(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) const
     { return elementwise_transform(__rhs, std::minus{}); }
 
     template<typename _Tp2, typename _DefaultVal2>
     constexpr Matrix&
-    operator+=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) noexcept
+    operator+=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs)
     { return elementwise_transform_inplace(__rhs, std::plus{}); }
 
     template<typename _Tp2, typename _DefaultVal2>
     constexpr Matrix&
-    operator-=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs) noexcept
+    operator-=(const Matrix<_Tp2, _Ln, _Cn, _DefaultVal2>& __rhs)
     { return elementwise_transform_inplace(__rhs, std::minus{}); }
 
-    template<typename _BinaryOperation1, typename _BinaryOperation2, typename _Tp2, size_type _Cn2, typename _DefaultVal2>
-    requires requires(_BinaryOperation2 __op2, _Tp __lhs, _Tp2 __rhs) { __op2(__lhs, __rhs); }
+    template<
+        typename _BinaryOperation1, typename _BinaryOperation2,
+        typename _Tp2, size_type _Cn2, typename _DefaultVal2>
+    requires requires(_BinaryOperation2& __op, const _Tp& __lhs, const _Tp2& __rhs)
+    { __op(__lhs, __rhs); }
     [[nodiscard]] constexpr auto
-    semiring_multiply(const Matrix<_Tp2, _Cn, _Cn2, _DefaultVal2>& __rhs, _BinaryOperation1 __binary_op1 = {}, _BinaryOperation2 __binary_op2 = {}) const noexcept
+    semiring_multiply(
+        const Matrix<_Tp2, _Cn, _Cn2, _DefaultVal2>& __rhs,
+        _BinaryOperation1 __binary_op1 = {},
+        _BinaryOperation2 __binary_op2 = {}) const
     {
-        using binary_operation2_result_t = std::remove_cvref_t<std::invoke_result_t<_BinaryOperation2, _Tp, _Tp2>>;
-        using binary_operation1_result_t = std::remove_cvref_t<std::invoke_result_t<_BinaryOperation1, binary_operation2_result_t, binary_operation2_result_t>>;
+        using binary_operation2_result_t =
+            std::remove_cvref_t<std::invoke_result_t<
+                _BinaryOperation2&,
+                const _Tp&,
+                const _Tp2&>>;
 
-        static_assert(std::invocable<_BinaryOperation1, binary_operation2_result_t, binary_operation2_result_t>);
-        static_assert(std::convertible_to<binary_operation1_result_t, binary_operation2_result_t>);
+        static_assert(
+            requires(
+                _BinaryOperation1& __op1, _BinaryOperation2& __op2,
+                binary_operation2_result_t& __result,
+                const _Tp& __lhs, const _Tp2& __rhs)
+            {
+                __result = __op2(__lhs, __rhs);
+                __result = __op1(__result, __op2(__lhs, __rhs));
+            });
 
         using default_value_t = std::conditional_t<
             std::is_same_v<binary_operation2_result_t, _Tp>,
@@ -296,15 +351,23 @@ public:
                 _DefaultVal2,
                 binary_operation2_result_t>>;
 
-        Matrix<binary_operation2_result_t, _Ln, _Cn2, default_value_t> result{};
+        using result_type = Matrix<binary_operation2_result_t, _Ln, _Cn2, default_value_t>;
+
+        result_type result(result_type::uninitialized);
 
         for (size_type i = 0; i < row(); ++i)
         {
-            for (size_type k = 0; k < column(); ++k)
+            for (size_type j = 0; j < __rhs.column(); ++j)
+            {
+                result._M_m[i][j] = __binary_op2(_M_m[i][0], __rhs._M_m[0][j]);
+            }
+
+            for (size_type k = 1; k < column(); ++k)
             {
                 for (size_type j = 0; j < __rhs.column(); ++j)
                 {
-                    result._M_m[i][j] = __binary_op1(result._M_m[i][j], __binary_op2(_M_m[i][k], __rhs._M_m[k][j]));
+                    result._M_m[i][j] =
+                        __binary_op1(result._M_m[i][j], __binary_op2(_M_m[i][k], __rhs._M_m[k][j]));
                 }
             }
         }
@@ -312,37 +375,29 @@ public:
         return result;
     }
 
-    template<typename _BinaryOperation1, typename _BinaryOperation2, typename _Tp2, typename _DefaultVal2>
-    requires requires(_BinaryOperation2 __op2, _Tp __lhs, _Tp2 __rhs) { { __op2(__lhs, __rhs) } -> std::convertible_to<_Tp>; }
+    template<
+        typename _BinaryOperation1, typename _BinaryOperation2,
+        typename _Tp2, typename _DefaultVal2>
     constexpr Matrix&
-    semiring_multiply_inplace(const Matrix<_Tp2, _Cn, _Cn, _DefaultVal2>& __rhs, _BinaryOperation1 __binary_op1 = {}, _BinaryOperation2 __binary_op2 = {}) noexcept
+    semiring_multiply_inplace(
+        const Matrix<_Tp2, _Cn, _Cn, _DefaultVal2>& __rhs,
+        _BinaryOperation1 __binary_op1 = {},
+        _BinaryOperation2 __binary_op2 = {})
     {
-        static_assert(requires(_BinaryOperation1 __op1, _Tp __x) { { __op1(__x, __x) } -> std::convertible_to<_Tp>; });
-
-        Matrix result{};
-
-        for (size_type i = 0; i < row(); ++i)
-        {
-            for (size_type k = 0; k < column(); ++k)
-            {
-                for (size_type j = 0; j < __rhs.column(); ++j)
-                {
-                    result._M_m[i][j] = __binary_op1(result._M_m[i][j], __binary_op2(_M_m[i][k], __rhs._M_m[k][j]));
-                }
-            }
-        }
+        auto result = semiring_multiply(
+            __rhs, std::move(__binary_op1), std::move(__binary_op2));
 
         return *this = std::move(result);
     }
 
     template<typename _Tp2, size_type _Cn2, typename _DefaultVal2>
     [[nodiscard]] constexpr auto
-    operator*(const Matrix<_Tp2, _Cn, _Cn2, _DefaultVal2>& __rhs) const noexcept
+    operator*(const Matrix<_Tp2, _Cn, _Cn2, _DefaultVal2>& __rhs) const
     { return semiring_multiply(__rhs, std::plus{}, std::multiplies{}); }
 
     template<typename _Tp2, typename _DefaultVal2>
     constexpr Matrix&
-    operator*=(const Matrix<_Tp2, _Cn, _Cn, _DefaultVal2>& __rhs) noexcept
+    operator*=(const Matrix<_Tp2, _Cn, _Cn, _DefaultVal2>& __rhs)
     { return semiring_multiply_inplace(__rhs, std::plus{}, std::multiplies{}); }
 
 private:
