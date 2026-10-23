@@ -1,7 +1,10 @@
 using hash_result_type = uint64;
 
-constexpr hash_result_type hash_base = std::array{449ULL, 100003ULL, 1000003ULL, 1000000007ULL, 911382323ULL}[0];
-constexpr hash_result_type hash_mod  = std::array{998244353ULL, 4294967291ULL, 1ULL << 60}[0];
+constexpr hash_result_type hash_base =
+    std::array{449ULL, 100003ULL, 1000003ULL, 1000000007ULL, 911382323ULL}[0];
+
+constexpr hash_result_type hash_mod  =
+    std::array{998244353ULL, 4294967291ULL, 1ULL << 60}[0];
 
 static_assert(hash_base < hash_mod);
 static_assert(hash_mod <= std::numeric_limits<hash_result_type>::max() / hash_mod);
@@ -45,7 +48,9 @@ struct Hash<std::pair<_Ft, _St>>
     hash_result_type
     operator()(const value_type& __value) const noexcept
     {
-        return (Hash<_Ft>{}(__value.first) % hash_mod * hash_base % hash_mod + Hash<_St>{}(__value.second) % hash_mod) % hash_mod;
+        return (
+            Hash<_Ft>{}(__value.first) % hash_mod * hash_base % hash_mod +
+            Hash<_St>{}(__value.second) % hash_mod) % hash_mod;
     }
 };
 
@@ -62,7 +67,8 @@ struct Hash<std::tuple<_Args...>>
         {
             hash_result_type result = 0;
 
-            for (const hash_result_type& i : std::array{{Hash<_Args...>{}(args)...}})
+            for (const auto& i :
+                std::array<hash_result_type, sizeof...(_Args)>{{Hash<_Args>{}(args)...}})
             {
                 result *= hash_base;
                 result %= hash_mod;
@@ -86,8 +92,8 @@ struct Hash<_Tp>
     {
         hash_result_type result = 0;
 
-        auto begin = std::ranges::begin(__value);
-        auto end   = std::ranges::end(__value);
+        auto begin = std::ranges::cbegin(__value);
+        auto end   = std::ranges::cend(__value);
 
         if constexpr (
             std::is_array_v<std::remove_reference_t<value_type>> and
@@ -103,14 +109,7 @@ struct Hash<_Tp>
             result *= hash_base;
             result %= hash_mod;
 
-            if constexpr (requires{ value_type::value_type; })
-            {
-                result += Hash<typename _Tp::value_type>{}(i) % hash_mod;
-            }
-            else
-            {
-                result += Hash<std::remove_reference_t<decltype(i)>>{}(i) % hash_mod;
-            }
+            result += Hash<std::remove_cvref_t<decltype(i)>>{}(i) % hash_mod;
 
             result %= hash_mod;
         }
@@ -131,7 +130,7 @@ struct Hash<void>
     }
 };
 
-class RangeHash
+class RollingHash
 {
 public:
 
@@ -140,18 +139,18 @@ public:
 
     static constexpr auto npos = static_cast<size_type>(-1);
 
-    RangeHash() noexcept
+    RollingHash() noexcept
         : _M_c{{0, 1}}
     { };
 
     template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent>
-    RangeHash(_Iter __first, _Sent __last)
-        : RangeHash()
+    RollingHash(_Iter __first, _Sent __last)
+        : RollingHash()
     { append(__first, __last); }
 
     template<std::ranges::input_range _Range>
-    RangeHash(_Range&& __r)
-        : RangeHash()
+    RollingHash(_Range&& __r)
+        : RollingHash()
     { append(std::forward<_Range>(__r)); }
 
     template<typename _Tp>
@@ -209,17 +208,13 @@ public:
             return 0;
         }
 
-        if (__pos + __n >= _M_c.size())
-        {
-            __n = _M_c.size() - __pos - 1;
-        }
-
+        __n = std::min(__n, size() - __pos);
         return (_M_c[__pos + __n].first + hash_mod - _M_c[__pos].first * _M_c[__n].second % hash_mod) % hash_mod;
     }
 
     [[nodiscard]] hash_result_type
     operator[](size_type __i) const noexcept
-    { return (*this)(__i, __i); }
+    { return (*this)(__i, 1); }
 
     [[nodiscard]] hash_result_type
     front(size_type __n = 1) const noexcept
@@ -230,43 +225,27 @@ public:
     { return empty() ? 0 : (*this)(size() - std::min(__n, size()), std::min(__n, size())); }
 
     [[nodiscard]] bool
-    operator==(const RangeHash& __rhs) const noexcept
-    { return (*this)() == __rhs(); }
+    operator==(const RollingHash& __rhs) const noexcept
+    { return size() == __rhs.size() and (*this)() == __rhs(); }
+
+    [[nodiscard]] auto
+    operator<=>(const RollingHash& __rhs) const noexcept
+    { return std::pair{size(), (*this)()} <=> std::pair{__rhs.size(), __rhs()}; }
 
     [[nodiscard]] bool
-    operator!=(const RangeHash& __rhs) const noexcept
-    { return (*this)() != __rhs(); }
+    matches(const RollingHash& __h, size_type __pos) const noexcept
+    { return __pos <= size() and __h.size() <= size() - __pos and (*this)(__pos, __h.size()) == __h(); }
 
     [[nodiscard]] bool
-    operator<(const RangeHash& __rhs) const noexcept
-    { return (*this)() < __rhs(); }
-
-    [[nodiscard]] bool
-    operator<=(const RangeHash& __rhs) const noexcept
-    { return (*this)() <= __rhs(); }
-
-    [[nodiscard]] bool
-    operator>(const RangeHash& __rhs) const noexcept
-    { return (*this)() > __rhs(); }
-
-    [[nodiscard]] bool
-    operator>=(const RangeHash& __rhs) const noexcept
-    { return (*this)() >= __rhs(); }
-
-    [[nodiscard]] bool
-    matches(const RangeHash& __h, size_type __pos) const noexcept
-    { return (*this)(__pos, __h.size()) == __h(); }
-
-    [[nodiscard]] bool
-    starts_with(const RangeHash& __h) const noexcept
+    starts_with(const RollingHash& __h) const noexcept
     { return matches(__h, 0); }
 
     [[nodiscard]] bool
-    ends_with(const RangeHash& __h) const noexcept
+    ends_with(const RollingHash& __h) const noexcept
     { return matches(__h, size() - std::min(__h.size(), size())); }
 
     [[nodiscard]] size_type
-    find(const RangeHash& __h, size_type __pos = 0) const noexcept
+    find(const RollingHash& __h, size_type __pos = 0) const noexcept
     {
         const auto n1 = size(), n2 = __h.size();
 
@@ -282,9 +261,12 @@ public:
     }
 
     [[nodiscard]] size_type
-    rfind(const RangeHash& __h, size_type __pos = std::numeric_limits<size_type>::max()) const noexcept
+    rfind(const RollingHash& __h, size_type __pos = std::numeric_limits<size_type>::max()) const noexcept
     {
-        const auto n1 = size(), n2 = __h.size();
+        if (__h.empty())
+        {
+            return size();
+        }
 
         if (__pos >= size())
         {
@@ -307,7 +289,7 @@ public:
     }
 
     [[nodiscard]] bool
-    contains(const RangeHash& __h) const noexcept
+    contains(const RollingHash& __h) const noexcept
     { return find(__h) != npos; }
 
     enum OverlapMode
@@ -317,7 +299,7 @@ public:
     };
 
     [[nodiscard]] size_type
-    count(const RangeHash& __h, OverlapMode __mode = AllowOverlap) const noexcept
+    count(const RollingHash& __h, OverlapMode __mode = AllowOverlap) const noexcept
     {
         if (__h.size() == 0)
         {
@@ -339,7 +321,7 @@ public:
     }
 
     [[nodiscard]] size_type
-    longest_suffix_prefix_overlap(const RangeHash& __h) const noexcept
+    longest_suffix_prefix_overlap(const RollingHash& __h) const noexcept
     {
         for (size_type i = std::min(size(), __h.size()); i > 0; --i)
         {
