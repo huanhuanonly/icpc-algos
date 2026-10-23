@@ -1,10 +1,15 @@
 template<
     std::random_access_iterator _Iter,
-    std::sized_sentinel_for<_Iter> _Sent,
+    std::sentinel_for<_Iter> _Sent,
     std::random_access_iterator _Out,
     typename _Comp = std::ranges::equal_to,
     typename _Proj = std::identity>
-constexpr void z_function(_Iter __first, _Sent __last, _Out __result, _Comp __comp = {}, _Proj __proj = {})
+requires
+    std::indirect_equivalence_relation<_Comp, std::projected<_Iter, _Proj>> and
+    std::indirectly_writable<_Out, std::iter_difference_t<_Iter>> and
+    requires(_Out __result) { ++*__result; }
+constexpr void
+z_function(_Iter __first, _Sent __last, _Out __result, _Comp __comp = {}, _Proj __proj = {})
 {
     if (__first == __last)
     {
@@ -21,7 +26,9 @@ constexpr void z_function(_Iter __first, _Sent __last, _Out __result, _Comp __co
     {
         if (it <= r)
         {
-            *oit = std::min(__result[it - l], static_cast<std::remove_reference_t<std::iter_reference_t<_Out>>>(r - it + 1));
+            *oit = std::min(
+                __result[it - l],
+                static_cast<std::remove_reference_t<std::iter_reference_t<_Out>>>(r - it + 1));
         }
         else
         {
@@ -44,5 +51,14 @@ template<
     std::random_access_iterator _Out,
     typename _Comp = std::ranges::equal_to,
     typename _Proj = std::identity>
-constexpr void z_function(_Range&& __r, _Out __out, _Comp __comp = {}, _Proj __proj = {})
-{ z_function(std::ranges::begin(__r), std::ranges::end(__r), std::move(__out), std::move(__comp), std::move(__proj)); }
+requires
+    std::indirect_equivalence_relation<_Comp, std::projected<std::ranges::iterator_t<_Range>, _Proj>> and
+    std::indirectly_writable<_Out, std::ranges::range_difference_t<_Range>> and
+    requires(_Out __result) { ++*__result; }
+constexpr void
+z_function(_Range&& __r, _Out __result, _Comp __comp = {}, _Proj __proj = {})
+{
+    z_function(
+        std::ranges::begin(__r), std::ranges::end(__r), std::move(__result),
+        std::move(__comp), std::move(__proj));
+}
