@@ -1,10 +1,15 @@
 template<typename _Container = std::vector<int>>
-[[nodiscard]] constexpr _Container primes_in_range(std::size_t __n)
+[[nodiscard]] constexpr _Container
+primes_in_range(std::size_t __n)
 {
-    _Container primes;
+    if (__n < 2)
+    {
+        return {};
+    }
+
+    _Container primes{};
 
     std::vector<bool> vis(__n + 1);
-
     vis[0] = vis[1] = true;
 
     for (std::size_t i = 2; i <= __n; ++i)
@@ -14,7 +19,8 @@ template<typename _Container = std::vector<int>>
             primes.push_back(static_cast<_Container::value_type>(i));
         }
 
-        for (const auto p : primes | std::views::take_while([__n, i](auto p) -> bool { return i * p <= __n; }))
+        for (const auto p : primes |
+            std::views::take_while([__n, i](auto p) -> bool { return i * p <= __n; }))
         {
             vis[i * p] = true;
 
