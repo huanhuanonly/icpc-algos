@@ -4,17 +4,17 @@ public:
 
     using size_type = int;
 
-    explicit
+    constexpr explicit
     DisjointSet(size_type __n = 0)
         : _M_parent(__n)
     { reset(); }
 
-    [[nodiscard]] size_type
-    find(size_type u)
+    [[nodiscard]] constexpr size_type
+    find(size_type u) noexcept
     { return _M_parent[u] == u ? u : _M_parent[u] = find(_M_parent[u]); }
 
-    bool
-    unite(size_type u, size_type v)
+    constexpr bool
+    unite(size_type u, size_type v) noexcept
     {
         const size_type fu = find(u);
         const size_type fv = find(v);
@@ -30,24 +30,26 @@ public:
         }
     }
 
-    [[nodiscard]] bool
-    connected(size_type u, size_type v)
+    [[nodiscard]] constexpr bool
+    connected(size_type u, size_type v) noexcept
     { return find(u) == find(v); }
 
-    void
+    constexpr void
     expand(size_type __n)
     {
+        assert(__n >= 0);
+
         const size_type size = static_cast<size_type>(_M_parent.size());
         _M_parent.resize(size + __n);
         std::iota(_M_parent.begin() + size, _M_parent.end(), size);
     }
 
-    void
-    reset()
+    constexpr void
+    reset() noexcept
     { std::iota(_M_parent.begin(), _M_parent.end(), 0); }
 
-    [[nodiscard]] size_type
-    size()
+    [[nodiscard]] constexpr size_type
+    size() const noexcept
     { return static_cast<size_type>(_M_parent.size()); }
 
 private:
