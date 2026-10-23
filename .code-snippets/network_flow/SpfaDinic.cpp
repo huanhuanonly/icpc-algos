@@ -28,8 +28,11 @@ public:
     void
     add_edge(size_type __from, size_type __to, capacity_type __cap, cost_type __cost)
     {
-        _M_e[__from].emplace_back(__to, size_type(_M_e[__to].size()) | rid_mask, __cap, __cost);
-        _M_e[__to].emplace_back(__from, size_type(_M_e[__from].size()) - 1, capacity_type{}, -__cost);
+        if (__from != __to)
+        {
+            _M_e[__from].emplace_back(__to, size_type(_M_e[__to].size()) | rid_mask, __cap, __cost);
+            _M_e[__to].emplace_back(__from, size_type(_M_e[__from].size()) - 1, capacity_type{}, -__cost);
+        }
     }
 
     [[nodiscard]] size_type
@@ -48,14 +51,13 @@ public:
     current_cost() const noexcept
     { return _M_cost; }
 
-    template<typename _Comp = std::ranges::less, typename _Proj = std::identity>
+    template<typename _Comp = std::ranges::less>
     cost_type
     build_cost_graph(
         size_type __source,
         size_type __sink,
         cost_type __inf = std::numeric_limits<cost_type>::max(),
-        _Comp __comp = {},
-        _Proj __proj = {})
+        _Comp __comp = {})
     {
         _M_cg.assign(_M_cg.size(), __inf);
         _M_vis.assign(_M_vis.size(), false);
@@ -74,7 +76,7 @@ public:
 
             for (const edge& i : _M_e[u])
             {
-                if (i.cap and __comp(__proj(_M_cg[u] + i.cost), __proj(_M_cg[i.to])))
+                if (i.cap and __comp(_M_cg[u] + i.cost, _M_cg[i.to]))
                 {
                     _M_cg[i.to] = _M_cg[u] + i.cost;
 
@@ -96,11 +98,16 @@ public:
 
     cost_type
     build_max_cost_graph(size_type __source, size_type __sink)
-    { return build_cost_graph(__source, __sink, std::numeric_limits<cost_type>::min(), std::ranges::greater{}); }
+    { return build_cost_graph(__source, __sink, std::numeric_limits<cost_type>::lowest(), std::ranges::greater{}); }
 
     capacity_type
     augment_flow(size_type __source, size_type __sink)
     {
+        if (__source == __sink)
+        {
+            return capacity_type{};
+        }
+
         const auto flow = _M_augment_flow(__source, __sink, std::numeric_limits<capacity_type>::max());
         _M_flow += flow;
         return flow;
@@ -115,9 +122,12 @@ public:
     cost_flow
     min_cost_feasible_flow(size_type __source, size_type __sink)
     {
-        while (build_min_cost_graph(__source, __sink) < cost_type{})
+        if (__source != __sink)
         {
-            while (augment_flow(__source, __sink));
+            while (build_min_cost_graph(__source, __sink) < cost_type{})
+            {
+                while (augment_flow(__source, __sink));
+            }
         }
 
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
@@ -126,9 +136,12 @@ public:
     cost_flow
     max_cost_feasible_flow(size_type __source, size_type __sink)
     {
-        while (build_max_cost_graph(__source, __sink) > cost_type{})
+        if (__source != __sink)
         {
-            while (augment_flow(__source, __sink));
+            while (build_max_cost_graph(__source, __sink) > cost_type{})
+            {
+                while (augment_flow(__source, __sink));
+            }
         }
 
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
@@ -137,9 +150,12 @@ public:
     cost_flow
     min_cost_max_flow(size_type __source, size_type __sink)
     {
-        while (build_min_cost_graph(__source, __sink) != std::numeric_limits<cost_type>::max())
+        if (__source != __sink)
         {
-            while (augment_flow(__source, __sink));
+            while (build_min_cost_graph(__source, __sink) != std::numeric_limits<cost_type>::max())
+            {
+                while (augment_flow(__source, __sink));
+            }
         }
 
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
@@ -148,9 +164,12 @@ public:
     cost_flow
     max_cost_max_flow(size_type __source, size_type __sink)
     {
-        while (build_max_cost_graph(__source, __sink) != std::numeric_limits<cost_type>::min())
+        if (__source != __sink)
         {
-            while (augment_flow(__source, __sink));
+            while (build_max_cost_graph(__source, __sink) != std::numeric_limits<cost_type>::lowest())
+            {
+                while (augment_flow(__source, __sink));
+            }
         }
 
         return cost_flow{.cost = _M_cost, .flow = _M_flow};
@@ -176,12 +195,16 @@ public:
     }
 
     void
-    resize(size_type __n)
+    expand(size_type __n)
     {
-        _M_e.resize(__n);
-        _M_cg.resize(__n);
-        _M_vis.resize(__n);
-        _M_cur.resize(__n);
+        assert(__n >= 0);
+
+        const auto new_size = size() + __n;
+
+        _M_e.resize(new_size);
+        _M_cg.resize(new_size);
+        _M_vis.resize(new_size);
+        _M_cur.resize(new_size);
     }
 
     void
@@ -208,12 +231,11 @@ private:
 
         _M_vis[__u] = true;
 
-        while (_M_cur[__u] < size_type(_M_e[__u].size()))
+        for (; _M_cur[__u] < size_type(_M_e[__u].size()); ++_M_cur[__u])
         {
             edge& i = _M_e[__u][_M_cur[__u]];
-            ++_M_cur[__u];
 
-            if (_M_cg[__u] + i.cost == _M_cg[i.to] and i.cap and not _M_vis[i.to])
+            if (i.cap and not _M_vis[i.to] and _M_cg[__u] + i.cost == _M_cg[i.to])
             {
                 if (const auto flow = _M_augment_flow(i.to, __sink, std::min(__limit, i.cap)); flow)
                 {
@@ -225,8 +247,6 @@ private:
                     _M_vis[__u] = false;
                     return flow;
                 }
-
-                _M_cg[i.to] = std::numeric_limits<cost_type>::max();
             }
         }
 
