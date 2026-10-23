@@ -1,9 +1,10 @@
 template<typename _Tp>
-constexpr _Tp exgcd(_Tp __a, _Tp& __x, _Tp __b, _Tp& __y)
+[[nodiscard]] constexpr _Tp
+exgcd(_Tp __a, _Tp& __x, _Tp __b, _Tp& __y) noexcept
 {
     if (__b)
     {
-        _Tp nx, ny;
+        _Tp nx{}, ny{};
         const _Tp gcd = exgcd(__b, nx, __a % __b, ny);
 
         __x = ny;

@@ -7,32 +7,46 @@ public:
     using reference = _Tp&;
     using const_reference = const _Tp&;
 
-    constexpr StaticModular(value_type __value = {}) noexcept
+    constexpr
+    StaticModular(value_type __value = {}) noexcept
         : _M_value(residue(__value))
     { }
 
-    constexpr value_type value() const noexcept
+    [[nodiscard]] constexpr value_type
+    value() const noexcept
     { return _M_value; }
 
-    static constexpr value_type modulus() noexcept
+    [[nodiscard]] static constexpr value_type
+    modulus() noexcept
     { return _Modulus; }
 
     template<typename _Ty>
-    static constexpr _Ty residue(_Ty __x) noexcept
+    [[nodiscard]] static constexpr _Ty
+    residue(_Ty __x) noexcept
     {
         if constexpr (std::is_unsigned_v<_Ty>)
         {
-            return __x % modulus();
+            return __x % static_cast<_Ty>(modulus());
         }
         else
         {
-            return (__x % static_cast<_Ty>(modulus()) + static_cast<_Ty>(modulus())) % modulus();
+            if (const auto r = __x % static_cast<_Ty>(modulus()); r < 0)
+            {
+                return r + static_cast<_Ty>(modulus());
+            }
+            else
+            {
+                return r;
+            }
         }
     }
 
     template<typename _Ty>
-    constexpr StaticModular power(_Ty __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    power(_Ty __x) const noexcept
     {
+        assert(__x >= 0);
+
         StaticModular result(static_cast<value_type>(1));
         auto t = *this;
 
@@ -44,107 +58,140 @@ public:
         return result;
     }
 
-    constexpr StaticModular inverse() const noexcept
+    [[nodiscard]] constexpr StaticModular
+    inverse() const noexcept
     {
-        if constexpr (std::is_integral_v<value_type>)
-        {
-            assert(std::gcd(_M_value, modulus()) == 1);
-        }
+#if defined(__SIZEOF_INT128__)
+        __int128_t x{}, y{};
+        const auto gcd = exgcd<__int128_t>(_M_value, x, modulus(), y);
 
-        auto extended_euclid = [&](const auto& self, auto a, decltype(a) b) -> std::array<decltype(a), 2>
-        {
-            if (b == 0)
-            {
-                return {1, 0};
-            }
+        assert(gcd == 1);
+        return static_cast<value_type>(residue(x));
+#else
+        int64_t x{}, y{};
+        const auto gcd = exgcd<int64_t>(_M_value, x, modulus(), y);
 
-            auto [x, y] = self(self, b, a % b);
-            return {{y, x - a / b * y}};
-        };
-
-        if constexpr (std::is_signed_v<value_type>)
-        {
-            return static_cast<value_type>(residue(extended_euclid(extended_euclid, _M_value, modulus())[0]));
-        }
-        else if constexpr (std::is_unsigned_v<value_type>)
-        {
-            return static_cast<value_type>(residue(extended_euclid(extended_euclid, std::make_signed_t<value_type>(_M_value), std::make_signed_t<value_type>(modulus()))[0]));
-        }
-        else
-        {
-            return static_cast<value_type>(residue(extended_euclid(extended_euclid, __int128_t(_M_value), __int128_t(modulus()))[0]));
-        }
+        assert(gcd == 1);
+        return static_cast<value_type>(residue(x));
+#endif
     }
 
     template<typename _Ty>
-    constexpr _Ty cast() const noexcept
+    [[nodiscard]] constexpr _Ty
+    cast() const noexcept
     { return static_cast<_Ty>(_M_value); }
 
 
-    constexpr StaticModular& operator=(value_type __value) noexcept
+    constexpr StaticModular&
+    operator=(value_type __value) noexcept
     { _M_value = residue(__value); return *this; }
 
-    constexpr operator value_type() const noexcept
+    [[nodiscard]] constexpr
+    operator value_type() const noexcept
     { return _M_value; }
 
-    constexpr std::strong_ordering operator<=>(value_type __x) const noexcept
-    { return _M_value <=> __x; }
+    [[nodiscard]] constexpr auto
+    operator<=>(value_type __x) const noexcept
+    { return _M_value <=> residue(__x); }
 
-    constexpr std::strong_ordering operator<=>(StaticModular __other) const noexcept
-    { return _M_value <=> __other._M_value; }
+    [[nodiscard]] constexpr bool
+    operator==(value_type __x) const noexcept
+    { return _M_value == residue(__x); }
 
-    constexpr reference operator*() noexcept
+    [[nodiscard]] constexpr auto
+    operator<=>(const StaticModular& __other) const noexcept = default;
+
+    [[nodiscard]] constexpr bool
+    operator==(const StaticModular& __other) const noexcept = default;
+
+    [[nodiscard]] constexpr const_reference
+    operator*() const noexcept
     { return _M_value; }
 
-    constexpr const_reference operator*() const noexcept
-    { return _M_value; }
-
-    constexpr bool operator!() const noexcept
+    [[nodiscard]] constexpr bool
+    operator!() const noexcept
     { return !_M_value; }
 
-    constexpr StaticModular operator~() const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator~() const noexcept
     { return ~_M_value; }
 
-    constexpr StaticModular operator+() const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator+() const noexcept
     { return +_M_value; }
 
-    constexpr StaticModular operator-() const noexcept
-    { return -_M_value; }
+    [[nodiscard]] constexpr StaticModular
+    operator-() const noexcept
+    { return modulus() - _M_value; }
 
-    constexpr StaticModular& operator++() noexcept
+    constexpr StaticModular&
+    operator++() noexcept
     { _M_value = residue(++_M_value); return *this; }
 
-    constexpr StaticModular& operator--() noexcept
-    { _M_value -= 1; return *this; }
+    constexpr StaticModular&
+    operator--() noexcept
+    { _M_value = _M_value ? _M_value - 1 : modulus() - 1; return *this; }
 
-    constexpr StaticModular operator++(int) noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator++(int) noexcept
     { auto t = *this; ++*this; return t; }
 
-    constexpr StaticModular operator--(int) noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator--(int) noexcept
     { auto t = *this; --*this; return t; }
 
-    constexpr StaticModular operator+(value_type __x) const noexcept
-    { return _M_value + residue(__x); }
+    [[nodiscard]] constexpr StaticModular
+    operator+(value_type __x) const noexcept
+    {
+        __x = residue(__x);
 
-    constexpr StaticModular operator-(value_type __x) const noexcept
-    { return _M_value + modulus() - residue(__x); }
+        if (_M_value < modulus() - __x)
+        {
+            return _M_value + __x;
+        }
+        else
+        {
+            return _M_value - (modulus() - __x);
+        }
+    }
 
-    constexpr StaticModular operator*(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator-(value_type __x) const noexcept
+    {
+        __x = residue(__x);
+
+        if (_M_value >= __x)
+        {
+            return _M_value - __x;
+        }
+        else
+        {
+            return _M_value + (modulus() - __x);
+        }
+    }
+
+    [[nodiscard]] constexpr StaticModular
+    operator*(value_type __x) const noexcept
     { auto t = *this; t *= __x; return t; }
 
-    constexpr StaticModular operator/(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator/(value_type __x) const noexcept
     { return *this * StaticModular(__x).inverse(); }
 
-    constexpr StaticModular operator%(value_type __x) const noexcept
-    { return _M_value % __x; }
+    [[nodiscard]] constexpr StaticModular
+    operator%(value_type __x) const noexcept
+    { assert(__x); return _M_value % __x; }
 
-    constexpr StaticModular& operator+=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator+=(value_type __x) noexcept
     { return *this = *this + __x; }
 
-    constexpr StaticModular& operator-=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator-=(value_type __x) noexcept
     { return *this = *this - __x; }
 
-    constexpr StaticModular& operator*=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator*=(value_type __x) noexcept
     {
         if constexpr (std::numeric_limits<value_type>::max() / modulus() >= modulus())
         {
@@ -154,7 +201,9 @@ public:
 #if defined(__SIZEOF_INT128__)
         else if constexpr (sizeof(value_type) <= 8U)
         {
-            _M_value = static_cast<value_type>(residue(static_cast<__uint128_t>(_M_value) * residue(__x)));
+            _M_value = static_cast<value_type>(residue(
+                static_cast<__uint128_t>(_M_value) * residue(__x)));
+
             return *this;
         }
 #endif
@@ -173,46 +222,64 @@ public:
         }
     }
 
-    constexpr StaticModular& operator/=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator/=(value_type __x) noexcept
     { return *this = *this / __x; }
 
-    constexpr StaticModular& operator%=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator%=(value_type __x) noexcept
     { return *this = *this % __x; }
 
-    constexpr StaticModular operator<<(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator<<(value_type __x) const noexcept
     { return *this * StaticModular(2).power(__x); }
 
-    constexpr StaticModular operator>>(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator>>(value_type __x) const noexcept
     { return *this / StaticModular(2).power(__x); }
 
-    constexpr StaticModular& operator<<=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator<<=(value_type __x) noexcept
     { return *this *= StaticModular(2).power(__x); }
 
-    constexpr StaticModular& operator>>=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator>>=(value_type __x) noexcept
     { return *this /= StaticModular(2).power(__x); }
 
-    constexpr StaticModular operator^(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator^(value_type __x) const noexcept
     { return _M_value ^ __x; }
 
-    constexpr StaticModular operator&(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator&(value_type __x) const noexcept
     { return _M_value & __x; }
 
-    constexpr StaticModular operator|(value_type __x) const noexcept
+    [[nodiscard]] constexpr StaticModular
+    operator|(value_type __x) const noexcept
     { return _M_value | __x; }
 
-    constexpr StaticModular& operator^=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator^=(value_type __x) noexcept
     { return *this = *this ^ __x; }
 
-    constexpr StaticModular& operator&=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator&=(value_type __x) noexcept
     { return *this = *this & __x; }
 
-    constexpr StaticModular& operator|=(value_type __x) noexcept
+    constexpr StaticModular&
+    operator|=(value_type __x) noexcept
     { return *this = *this | __x; }
 
-    friend inline std::istream& operator>>(std::istream& __is, StaticModular& __that) noexcept
-    { auto& result = __is >> __that._M_value; __that._M_value = __that.residue(__that._M_value); return result; }
+    friend inline std::istream&
+    operator>>(std::istream& __is, StaticModular& __that)
+    {
+        decltype(auto) result = __is >> __that._M_value;
+        __that._M_value = __that.residue(__that._M_value);
+        return result;
+    }
 
-    friend inline std::ostream& operator<<(std::ostream& __os, const StaticModular& __that) noexcept
+    friend inline std::ostream&
+    operator<<(std::ostream& __os, const StaticModular& __that)
     { return __os << __that._M_value; }
 
 private:
