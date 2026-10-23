@@ -23,8 +23,11 @@ public:
     void
     add_edge(size_type __from, size_type __to, capacity_type __cap)
     {
-        _M_e[__from].emplace_back(__to, size_type(_M_e[__to].size()) | rid_mask, __cap);
-        _M_e[__to].emplace_back(__from, size_type(_M_e[__from].size()) - 1, capacity_type{});
+        if (__from != __to)
+        {
+            _M_e[__from].emplace_back(__to, size_type(_M_e[__to].size()) | rid_mask, __cap);
+            _M_e[__to].emplace_back(__from, size_type(_M_e[__from].size()) - 1, capacity_type{});
+        }
     }
 
     [[nodiscard]] size_type
@@ -70,6 +73,11 @@ public:
     capacity_type
     augment_flow(size_type __source, size_type __sink)
     {
+        if (__source == __sink)
+        {
+            return capacity_type{};
+        }
+
         const auto flow = _M_augment_flow(__source, __sink, std::numeric_limits<capacity_type>::max());
         _M_flow += flow;
         return flow;
@@ -78,9 +86,12 @@ public:
     capacity_type
     max_flow(size_type __source, size_type __sink)
     {
-        while (build_level_graph(__source, __sink) != std::numeric_limits<size_type>::max())
+        if (__source != __sink)
         {
-            while (augment_flow(__source, __sink));
+            while (build_level_graph(__source, __sink) != std::numeric_limits<size_type>::max())
+            {
+                while (augment_flow(__source, __sink));
+            }
         }
 
         return _M_flow;
@@ -109,11 +120,15 @@ public:
     }
 
     void
-    resize(size_type __n)
+    expand(size_type __n)
     {
-        _M_e.resize(__n);
-        _M_cg.resize(__n);
-        _M_cur.resize(__n);
+        assert(__n >= 0);
+
+        const auto new_size = size() + __n;
+
+        _M_e.resize(new_size);
+        _M_cg.resize(new_size);
+        _M_cur.resize(new_size);
     }
 
     void
@@ -123,6 +138,16 @@ public:
         {
             i.clear();
         }
+
+        _M_flow = capacity_type{};
+    }
+
+    void
+    clear()
+    {
+        _M_e.clear();
+        _M_cg.clear();
+        _M_cur.clear();
 
         _M_flow = capacity_type{};
     }
@@ -137,10 +162,9 @@ private:
             return __limit;
         }
 
-        while (_M_cur[__u] < size_type(_M_e[__u].size()))
+        for (; _M_cur[__u] < size_type(_M_e[__u].size()); ++_M_cur[__u])
         {
             edge& i = _M_e[__u][_M_cur[__u]];
-            ++_M_cur[__u];
 
             if (_M_cg[__u] + 1 == _M_cg[i.to] and i.cap)
             {
