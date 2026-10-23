@@ -3,7 +3,7 @@ template<
     typename _Tp,
     typename _Comp = std::ranges::less,
     typename _MergeFunc = decltype([](const _Tp& lhs, const _Tp&) -> _Tp { return lhs; })>
-requires std::convertible_to<std::invoke_result_t<_MergeFunc, _Tp, _Tp>, _Tp>
+requires std::convertible_to<std::invoke_result_t<_MergeFunc&, const _Tp&, const _Tp&>, _Tp>
 class MergeSplitTreapImpl
 {
 public:
@@ -24,26 +24,31 @@ public:
         value_type reduced_value;
     };
 
-    explicit
+    constexpr explicit
     MergeSplitTreapImpl(_Comp __comp = {}, _MergeFunc __merge = {}) noexcept
         : _M_tree(1), _M_root(0), _M_comp(__comp), _M_merge(__merge)
     { }
 
-    MergeSplitTreapImpl(std::initializer_list<value_type> __init, _Comp __comp = {}, _MergeFunc __merge = {}) noexcept
-        : MergeSplitTreapImpl(__comp, __merge)
+    constexpr
+    MergeSplitTreapImpl(
+        std::initializer_list<value_type> __init, _Comp __comp = {}, _MergeFunc __merge = {}) noexcept
+            : MergeSplitTreapImpl(__comp, __merge)
     { for (const auto& value : __init) { insert(value); } }
 
     template<std::input_iterator _Iter, std::sentinel_for<_Iter> _Sent, typename _Proj = std::identity>
-    MergeSplitTreapImpl(_Iter __first, _Sent __last, _Proj __proj = {}, _Comp __comp = {}, _MergeFunc __merge = {}) noexcept
-        : MergeSplitTreapImpl(__comp, __merge)
+    constexpr
+    MergeSplitTreapImpl(
+        _Iter __first, _Sent __last, _Proj __proj = {}, _Comp __comp = {}, _MergeFunc __merge = {}) noexcept
+            : MergeSplitTreapImpl(__comp, __merge)
     { for (; __first != __last; ++__first) { insert(std::invoke(__proj, *__first)); } }
 
     template<std::ranges::input_range _Range, typename _Proj = std::identity>
+    constexpr
     MergeSplitTreapImpl(_Range&& __r, _Proj __proj = {}, _Comp __comp = {}, _MergeFunc __merge = {}) noexcept
         : MergeSplitTreapImpl(__comp, __merge)
     { for (auto&& value : __r) { insert(std::invoke(__proj, value)); } }
 
-    [[nodiscard]] size_type
+    [[nodiscard]] constexpr size_type
     root() const noexcept
     { return _M_root; }
 
@@ -51,12 +56,12 @@ public:
     update_root(size_type __new_root) noexcept
     { _M_root = __new_root; }
 
-    [[nodiscard]] size_type
+    [[nodiscard]] constexpr size_type
     size() const noexcept
     { return _M_tree[root()].size; }
 
-    void
-    reserve(size_type __n) noexcept
+    constexpr void
+    reserve(size_type __n)
     {
         _M_tree.reserve(1 + __n);
 
@@ -66,12 +71,12 @@ public:
         }
     }
 
-    [[nodiscard]] bool
+    [[nodiscard]] constexpr bool
     empty() const noexcept
-    { return not size(); }
+    { return size() == 0; }
 
-    void
-    clear() noexcept
+    constexpr void
+    clear()
     {
         _M_tree.resize(1);
         update_root(size_type{});
@@ -82,12 +87,12 @@ public:
         }
     }
 
-    [[nodiscard]] const node&
+    [[nodiscard]] constexpr const node&
     node_at(size_type __i) const noexcept
     { return _M_tree[__i]; }
 
-    void
-    split_left_by_value(size_type u, const_reference value, size_type& rx, size_type& ry) noexcept
+    constexpr void
+    split_left_by_value(size_type u, const_reference value, size_type& rx, size_type& ry)
     {
         if (not u)
         {
@@ -111,8 +116,8 @@ public:
         push_up(u);
     }
 
-    void
-    split_right_by_value(size_type u, const_reference value, size_type& rx, size_type& ry) noexcept
+    constexpr void
+    split_right_by_value(size_type u, const_reference value, size_type& rx, size_type& ry)
     {
         if (not u)
         {
@@ -136,12 +141,12 @@ public:
         push_up(u);
     }
 
-    void
-    split_by_value(size_type u, const_reference value, size_type& rx, size_type& ry) noexcept
+    constexpr void
+    split_by_value(size_type u, const_reference value, size_type& rx, size_type& ry)
     { split_right_by_value(u, value, rx, ry); }
 
-    void
-    split_by_size(size_type u, size_type left_size, size_type& rx, size_type& ry) noexcept
+    constexpr void
+    split_by_size(size_type u, size_type left_size, size_type& rx, size_type& ry)
     {
         if (not u)
         {
@@ -165,8 +170,8 @@ public:
         push_up(u);
     }
 
-    size_type
-    merge(size_type u, size_type v) noexcept
+    constexpr size_type
+    merge(size_type u, size_type v)
     {
         if (not u or not v)
         {
@@ -189,24 +194,24 @@ public:
         }
     }
 
-    void
-    insert(const_reference __value) noexcept
+    constexpr void
+    insert(const_reference __value)
     {
         size_type rx, ry;
         split_left_by_value(root(), __value, rx, ry);
         update_root(merge(merge(rx, create_node(__value)), ry));
     }
 
-    void
-    insert_before(size_type __pos, const_reference __value) noexcept
+    constexpr void
+    insert_before(size_type __pos, const_reference __value)
     {
         size_type rx, ry;
         split_by_size(root(), __pos, rx, ry);
         update_root(merge(merge(rx, create_node(__value)), ry));
     }
 
-    bool
-    remove(const_reference __value) noexcept
+    constexpr bool
+    remove(const_reference __value)
     {
         size_type rx, rm, ry;
         split_right_by_value(root(), __value, rx, rm);
@@ -224,8 +229,8 @@ public:
         }
     }
 
-    size_type
-    remove_all(const_reference __value) noexcept
+    constexpr size_type
+    remove_all(const_reference __value)
     {
         size_type rx, rm, ry;
         split_right_by_value(root(), __value, rx, rm);
@@ -237,7 +242,7 @@ public:
         return cnt;
     }
 
-    size_type
+    constexpr size_type
     remove_at(size_type __pos, size_type __n = 1)
     {
         size_type rx, rm, ry;
@@ -250,8 +255,8 @@ public:
         return cnt;
     }
 
-    [[nodiscard]] const_reference
-    find_by_order(size_type __rank) noexcept
+    [[nodiscard]] constexpr const_reference
+    find_by_order(size_type __rank)
     {
         size_type rx, rm, ry;
         split_by_size(root(), __rank, rx, rm);
@@ -261,8 +266,8 @@ public:
         return _M_tree[rm].value;
     }
 
-    [[nodiscard]] size_type
-    order_of_key(const_reference __value) noexcept
+    [[nodiscard]] constexpr size_type
+    order_of_key(const_reference __value)
     {
         size_type rx, ry;
         split_right_by_value(root(), __value, rx, ry);
@@ -273,16 +278,16 @@ public:
         return rank;
     }
 
-    [[nodiscard]] const_reference
-    front() noexcept
+    [[nodiscard]] constexpr const_reference
+    front()
     { return find_by_order(0); }
 
-    [[nodiscard]] const_reference
-    back() noexcept
+    [[nodiscard]] constexpr const_reference
+    back()
     { return find_by_order(size() - 1); }
 
-    [[nodiscard]] value_type
-    reduce(size_type __pos, size_type __n) noexcept
+    [[nodiscard]] constexpr value_type
+    reduce(size_type __pos, size_type __n)
     {
         size_type rx, rm, ry;
         split_by_size(root(), __pos, rx, rm);
@@ -294,12 +299,12 @@ public:
         return value;
     }
 
-    [[nodiscard]] value_type
+    [[nodiscard]] constexpr const_reference
     reduce() const noexcept
     { return _M_tree[root()].reduced_value; }
 
-    [[nodiscard]] const_reference
-    lower_bound(const_reference __value, bool* __found = nullptr) noexcept
+    [[nodiscard]] constexpr const_reference
+    lower_bound(const_reference __value, bool* __found = nullptr)
     {
         size_type rx, rm, ry;
         split_right_by_value(root(), __value, rx, rm);
@@ -314,8 +319,8 @@ public:
         return _M_tree[rm].value;
     }
 
-    [[nodiscard]] const_reference
-    upper_bound(const_reference __value, bool* __found = nullptr) noexcept
+    [[nodiscard]] constexpr const_reference
+    upper_bound(const_reference __value, bool* __found = nullptr)
     {
         size_type rx, rm, ry;
         split_left_by_value(root(), __value, rx, rm);
@@ -336,8 +341,8 @@ public:
         size_type len;
     };
 
-    [[nodiscard]] equal_range_result
-    equal_range(const_reference __value) noexcept
+    [[nodiscard]] constexpr equal_range_result
+    equal_range(const_reference __value)
     {
         size_type rx, rm, ry;
         split_right_by_value(root(), __value, rx, rm);
@@ -349,17 +354,17 @@ public:
         return result;
     }
 
-    [[nodiscard]] size_type
-    count(const_reference __value) noexcept
+    [[nodiscard]] constexpr size_type
+    count(const_reference __value)
     { return equal_range(__value).len; }
 
-    [[nodiscard]] bool
-    contains(const_reference __value) noexcept
+    [[nodiscard]] constexpr bool
+    contains(const_reference __value)
     { return static_cast<bool>(equal_range(__value).len); }
 
     template<typename _Func>
-    void
-    for_each(size_type __pos, size_type __n, _Func __func) noexcept
+    constexpr void
+    for_each(size_type __pos, size_type __n, _Func __func)
     {
         size_type rx, rm, ry;
         split_by_size(root(), __pos, rx, rm);
@@ -370,16 +375,16 @@ public:
     }
 
     template<typename _Func>
-    void
-    for_each(_Func __func) noexcept
+    constexpr void
+    for_each(_Func __func)
     { inorder(root(), __func); }
 
-    template<template<typename...> typename _Container>
-    _Container<value_type>
-    flatten() noexcept
+    template<typename _Container, typename _Proj = std::identity>
+    constexpr _Container
+    to(_Proj __proj = {})
     {
-        _Container<value_type> result;
-        for_each([&](const_reference value) -> void { result.push_back(value); });
+        _Container result{};
+        for_each([&](const_reference value) -> void { result.emplace_back(std::invoke(__proj, value)); });
         return result;
     }
 
@@ -388,12 +393,15 @@ protected:
     [[nodiscard]] static size_type
     generate_priority() noexcept
     {
-        static std::mt19937 rng(std::random_device{}() ^ std::chrono::steady_clock::now().time_since_epoch().count());
+        static std::mt19937 rng(
+            std::random_device{}() ^
+            std::chrono::steady_clock::now().time_since_epoch().count());
+
         return rng();
     }
 
-    size_type
-    create_node(const value_type& __value) noexcept
+    constexpr size_type
+    create_node(const value_type& __value)
     {
         _M_tree.emplace_back(0, 0, generate_priority(), 1, __value, __value);
 
@@ -405,12 +413,12 @@ protected:
         return size_type(_M_tree.size()) - 1;
     }
 
-    [[nodiscard]] node&
+    [[nodiscard]] constexpr node&
     node_at(size_type __i) noexcept
     { return _M_tree[__i]; }
 
-    void
-    push_up(size_type u) noexcept
+    constexpr void
+    push_up(size_type u)
     {
         _M_tree[u].size = _M_tree[_M_tree[u].ls].size + 1 + _M_tree[_M_tree[u].rs].size;
 
@@ -427,8 +435,8 @@ protected:
         }
     }
 
-    void
-    push_down(size_type u) noexcept
+    constexpr void
+    push_down(size_type u)
     {
         if constexpr (requires() { static_cast<_Derived*>(this)->on_push_down(u); })
         {
@@ -437,8 +445,8 @@ protected:
     }
 
     template<typename _Func>
-    void
-    inorder(size_type u, _Func&& f) noexcept
+    constexpr void
+    inorder(size_type u, _Func&& f)
     {
         if (u)
         {
@@ -464,10 +472,11 @@ template<
     typename _Tp,
     typename _Comp = std::ranges::less,
     typename _MergeFunc = decltype([](const _Tp& lhs, const _Tp&) -> _Tp { return lhs; })>
-requires std::convertible_to<std::invoke_result_t<_MergeFunc, _Tp, _Tp>, _Tp>
-class MergeSplitTreap : public MergeSplitTreapImpl<MergeSplitTreap<_Tp, _Comp, _MergeFunc>, _Tp, _Comp, _MergeFunc>
+requires std::convertible_to<std::invoke_result_t<_MergeFunc&, const _Tp&, const _Tp&>, _Tp>
+class MergeSplitTreap :
+    public MergeSplitTreapImpl<MergeSplitTreap<_Tp, _Comp, _MergeFunc>, _Tp, _Comp, _MergeFunc>
 {
 public:
-    using Base = MergeSplitTreapImpl<MergeSplitTreap<_Tp, _Comp, _MergeFunc>, _Tp, _Comp, _MergeFunc>;
-    using Base::Base;
+    using base_type = MergeSplitTreapImpl<MergeSplitTreap<_Tp, _Comp, _MergeFunc>, _Tp, _Comp, _MergeFunc>;
+    using base_type::base_type;
 };
