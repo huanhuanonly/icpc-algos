@@ -10,28 +10,28 @@ public:
         size_type size;
     };
 
-    explicit
+    constexpr explicit
     DisjointSet(size_type __n = 0)
         : _M_tree(__n)
     { reset(); }
 
-    [[nodiscard]] size_type
-    find(size_type u) const
+    [[nodiscard]] constexpr size_type
+    find(size_type u) const noexcept
     { return is_root(u) ? u : find(_M_tree[u].parent); }
 
-    bool
-    unite(size_type u, size_type v)
+    constexpr bool
+    unite(size_type u, size_type v) noexcept
     {
         size_type fu = find(u);
         size_type fv = find(v);
 
-        if (_M_tree[fu].size < _M_tree[fv].size)
-        {
-            std::swap(fu, fv);
-        }
-
         if (fu != fv)
         {
+            if (_M_tree[fu].size < _M_tree[fv].size)
+            {
+                std::swap(fu, fv);
+            }
+
             _M_tree[fv].parent = fu;
             _M_tree[fu].size += _M_tree[fv].size;
             return true;
@@ -42,17 +42,19 @@ public:
         }
     }
 
-    [[nodiscard]] bool
-    is_root(size_type u) const
+    [[nodiscard]] constexpr bool
+    is_root(size_type u) const noexcept
     { return _M_tree[u].parent == u; }
 
-    [[nodiscard]] bool
-    connected(size_type u, size_type v)
+    [[nodiscard]] constexpr bool
+    connected(size_type u, size_type v) const noexcept
     { return find(u) == find(v); }
 
-    void
+    constexpr void
     expand(size_type __n)
     {
+        assert(__n >= 0);
+
         const size_type old_size = size();
         _M_tree.resize(old_size + __n);
 
@@ -63,8 +65,8 @@ public:
         }
     }
 
-    void
-    reset()
+    constexpr void
+    reset() noexcept
     {
         for (size_type i = 0; i < size(); ++i)
         {
@@ -73,12 +75,12 @@ public:
         }
     }
 
-    [[nodiscard]] size_type
-    size()
+    [[nodiscard]] constexpr size_type
+    size() const noexcept
     { return static_cast<size_type>(_M_tree.size()); }
 
-    [[nodiscard]] size_type
-    component_size(size_type u) const
+    [[nodiscard]] constexpr size_type
+    component_size(size_type u) const noexcept
     { return _M_tree[find(u)].size; }
 
 private:
