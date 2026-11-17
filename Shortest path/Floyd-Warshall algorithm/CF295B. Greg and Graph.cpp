@@ -7,7 +7,7 @@
  *
  * Submissions ~> https://codeforces.com/contest/295/submission/249600754 By huanhuanonly
  *
- * @b Floyd ( @a dynamic-insertion )
+ * @b Floyd–Warshall-algorithm ( @a dynamic-insertion )
  *
  * ----March 04, 2024 [21h:46m:15s]----
 */

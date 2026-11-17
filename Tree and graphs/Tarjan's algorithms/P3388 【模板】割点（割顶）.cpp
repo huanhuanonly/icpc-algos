@@ -1,12 +1,12 @@
 /**
  * => P3388 【模板】割点（割顶） ( @c 普及+/提高 )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P3388
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/160792460 By huanhuanonly
- * 
- * @b Tarjan
- * 
+ *
+ * @b Tarjan's-algorithm ( @a articulation-point )
+ *
  * ----May 31, 2024 [11h:25m:54s]----
 */
 
@@ -76,9 +76,9 @@ int main(void)
     for (int i = 1; i <= n; ++i)
         if (dfn[i].first == 0)
             dfs(i, i);
-    
+
     std::cout << ans.size() << '\n';
-    
+
     for (const auto& i : ans)
         std::cout << i << ' ';
 

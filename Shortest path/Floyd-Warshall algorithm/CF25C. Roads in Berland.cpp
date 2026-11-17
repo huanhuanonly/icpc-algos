@@ -1,14 +1,14 @@
 /**
  * Codeforces Beta Round 25 (Div. 2 Only)
- * 
+ *
  * => C. Roads in Berland ( @c 1900 )
- * 
+ *
  * -> https://codeforces.com/contest/25/problem/C
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/25/submission/341217712 By huanhuanonly
- * 
- * @b Floyd
- * 
+ *
+ * @b Floyd–Warshall-algorithm
+ *
  * ----September 30, 2025 [23h:29m:52s]----
 */
 
@@ -74,7 +74,7 @@ int main(void)
     {
         int u, v;
         uint64 c;
-        
+
         std::cin >> u >> v >> c;
 
         --u, --v;

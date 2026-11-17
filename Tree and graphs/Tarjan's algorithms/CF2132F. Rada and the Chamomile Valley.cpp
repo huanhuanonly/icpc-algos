@@ -1,14 +1,15 @@
 /**
  * Codeforces Round 1043 (Div. 3)
- * 
+ *
  * => F. Rada and the Chamomile Valley ( @c 2100 )
- * 
+ *
  * -> https://codeforces.com/contest/2132/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2132/submission/336664318 By huanhuanonly
- * 
- * @b Tarjan ( @a bridge ) and @b Dijkstra
- * 
+ *
+ * @b Tarjan's-algorithm ( @a bridge-finding )
+ * @b Dijkstra
+ *
  * ----September 03, 2025 [01h:23m:58s]----
 */
 

@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 333 (Div. 1)
- * 
+ *
  * => A. The Two Routes ( @c 1600 )
- * 
+ *
  * -> https://codeforces.com/contest/601/problem/A
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/601/submission/241283801 By huanhuanonly
- * 
- * @b Floyd
- * 
+ *
+ * @b Floyd–Warshall-algorithm
+ *
  * ----January 12, 2024 [21h:16m:35s]----
 */
 
@@ -21,7 +21,7 @@ int main(void)
 {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
-    
+
     int n, m;
     std::cin >> n >> m;
 

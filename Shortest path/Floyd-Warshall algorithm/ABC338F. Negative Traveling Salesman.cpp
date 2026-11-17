@@ -7,7 +7,8 @@
  *
  * Submissions ~> https://atcoder.jp/contests/abc338/submissions/50900017 By huanhuanonly
  *
- * @b Floyd based on @b Layered-graph
+ * @b Floyd–Warshall-algorithm
+ * @b Bitmask-DP
  *
  * ----March 04, 2024 [17h:50m:32s]----
 */

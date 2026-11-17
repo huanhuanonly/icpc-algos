@@ -7,7 +7,7 @@
  *
  * Submissions ~> https://atcoder.jp/contests/abc375/submissions/59313777 By huanhuanonly
  *
- * @b Floyd and @b Offline ( @a turn-back-time )
+ * @b Floyd–Warshall-algorithm and @b Offline ( @a turn-back-time )
  *
  * ----November 01, 2024 [11h:38m:28s]----
 */

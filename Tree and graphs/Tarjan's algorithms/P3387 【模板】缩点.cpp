@@ -1,12 +1,12 @@
 /**
  * => P3387 【模板】缩点 ( @c 普及+/提高 )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P3387
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/160862435 By huanhuanonly
- * 
- * @b Tarjan ( @a strong-connectivity-component )
- * 
+ *
+ * @b Tarjan's-algorithm ( @a strongly-connected-component )
+ *
  * ----May 31, 2024 [21h:37m:07s]----
 */
 

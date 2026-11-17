@@ -7,7 +7,7 @@
  *
  * Submissions ~> https://codeforces.com/contest/1204/submission/387716055 By huanhuanonly
  *
- * @b Floyd
+ * @b Floyd–Warshall-algorithm
  * @b Linear-DP
  *
  * ----August 20, 2026 [01h:51m:24s]----

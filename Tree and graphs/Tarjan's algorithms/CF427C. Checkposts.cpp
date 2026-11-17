@@ -7,7 +7,7 @@
  *
  * Submissions ~> https://codeforces.com/contest/427/submission/388699536 By huanhuanonly
  *
- * @b Tarjan ( @a strong-connectivity-component )
+ * @b Tarjan's-algorithm ( @a strongly-connected-component )
  *
  * ----August 29, 2026 [00h:52m:14s]----
 */

@@ -7,7 +7,7 @@
  *
  * Submissions ~> https://atcoder.jp/contests/abc478/submissions/80042982 By huanhuanonly
  *
- * @b Tarjan ( @a strong-connectivity-component )
+ * @b Tarjan's-algorithm ( @a strongly-connected-component )
  * @b Dfs on @a Trees
  *
  * ----October 14, 2026 [21h:21m:59s]----

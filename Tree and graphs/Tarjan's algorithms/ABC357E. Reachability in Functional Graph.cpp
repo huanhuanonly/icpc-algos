@@ -1,14 +1,14 @@
 /**
  * SuntoryProgrammingContest2024（AtCoder Beginner Contest 357）
- * 
+ *
  * => E - Reachability in Functional Graph ( @c 450 )
- * 
+ *
  * -> https://atcoder.jp/contests/abc357/tasks/abc357_e
- * 
+ *
  * Submissions ~> https://atcoder.jp/contests/abc357/submissions/54456805 By huanhuanonly
- * 
- * @b Tarjan ( @a strong-connectivity-component )
- * 
+ *
+ * @b Tarjan's-algorithm ( @a strongly-connected-component )
+ *
  * ----June 11, 2024 [19h:23m:10s]----
 */
 

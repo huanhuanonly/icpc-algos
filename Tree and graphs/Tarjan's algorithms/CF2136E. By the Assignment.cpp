@@ -1,17 +1,17 @@
 /**
  * Codeforces Round 1046 (Div. 2)
- * 
+ *
  * => E. By the Assignment ( @c 2000 )
- * 
+ *
  * -> https://codeforces.com/contest/2136/problem/E
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2136/submission/338662711 By huanhuanonly
- * 
- * @b Tarjan ( @a bridge )
+ *
+ * @b Tarjan's-algorithm ( @a bridge-finding )
  * @b Disjoint-set
  * @b Bitwise-XOR
  * @b Bipartite-graph
- * 
+ *
  * ----September 15, 2025 [10h:50m:22s]----
 */
 
@@ -107,7 +107,7 @@ int main(void)
         std::cin >> n >> m >> maxv;
 
         std::vector<int> v(n + 1);
-        
+
         for (int i = 1; i <= n; ++i)
         {
             std::cin >> v[i];
@@ -172,7 +172,7 @@ int main(void)
 
         std::vector<bool> vis(n + 1);
         std::vector<bool> dis(n + 1);
-        
+
         auto check = [&](int start) -> bool
         {
 
@@ -207,7 +207,7 @@ int main(void)
             if (found)
             {
                 auto& ref = dsu.values[dsu.find(start)];
-                
+
                 if (ref != -1 and ref != 0)
                 {
                     return false;
@@ -228,7 +228,7 @@ int main(void)
         }
 
         std::set<int> cnt;
-        
+
         for (int i = 1; i <= n; ++i)
         {
             if (dsu.values[dsu.find(i)] == -1)
