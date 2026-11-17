@@ -1,11 +1,15 @@
 /**
- * 2024 牛客暑期多校训练营 7
- * 
- * => D - Interval Selection
- * 
+ * 2024牛客暑期多校训练营7
+ *
+ * => D-Interval Selection
+ *
  * -> https://ac.nowcoder.com/acm/contest/81602/D
- * 
- * @b Segment-tree to find the minimum value of interval and its count
+ *
+ * Submissions ~> https://ac.nowcoder.com/acm/contest/view-submission?submissionId=71108748 By huanhuanonly
+ *
+ * @b Segment-tree
+ *
+ * ----August 22, 2024 [16h:16m:17s]----
 */
 
 #include <bits/stdc++.h>
@@ -137,7 +141,7 @@ public:
             update(ls(p), l, mid, x, y, v);
         if (y > mid)
             update(rs(p), mid + 1, r, x, y, v);
-        
+
         push_up(p);
     }
 };
@@ -192,7 +196,7 @@ int main(void)
         std::map<int, int> idx;
 
         std::map<int, std::function<void(void)>> undo;
-        
+
         // Enumerate the right endpoints, and count the feasible left endpoints
         for (int i = 1; i <= n; ++i)
         {

@@ -1,16 +1,16 @@
 /**
  * Codeforces Round 938 (Div. 3)
- * 
+ *
  * => H. The Most Reckless Defense ( @c 2300 )
- * 
+ *
  * -> https://codeforces.com/contest/1955/problem/H
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/1955/submission/261784503 By huanhuanonly
- * 
+ *
  * @b SPFA-Dinic for @a Maximum-cost-maximum-flow ( @a maximum-weighted-matching-for-bipartite-graphs )
- * 
- * @see also https://zhuanlan.zhihu.com/p/691549381
- * 
+ *
+ * @see https://zhuanlan.zhihu.com/p/691549381
+ *
  * ----May 20, 2024 [21h:15m:08s]----
 */
 
@@ -127,7 +127,7 @@ int main(void)
                     if (dis[u] + i.cost > dis[i.to])
                     {
                         dis[i.to] = dis[u] + i.cost;
-                        
+
                         if (vis[i.to] == false)
                         {
                             vis[i.to] = true;

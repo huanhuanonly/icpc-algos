@@ -1,13 +1,15 @@
 /**
  * Panasonic Programming Contest 2024（AtCoder Beginner Contest 375）
- * 
+ *
  * => F - Road Blocked ( @c 550 )
- * 
+ *
  * -> https://atcoder.jp/contests/abc375/tasks/abc375_f
- * 
+ *
  * Submissions ~> https://atcoder.jp/contests/abc375/submissions/59313777 By huanhuanonly
- * 
- * @b Floyd @a Turn-back-time
+ *
+ * @b Floyd and @b Offline ( @a turn-back-time )
+ *
+ * ----November 01, 2024 [11h:38m:28s]----
 */
 
 #include <bits/stdc++.h>

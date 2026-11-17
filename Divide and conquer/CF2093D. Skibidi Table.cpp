@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 1016 (Div. 3)
- * 
+ *
  * => D. Skibidi Table ( @c 1400 )
- * 
+ *
  * -> https://codeforces.com/contest/2093/problem/D
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2093/submission/314953915 By huanhuanonly
- * 
- * @b Dfs and @b Divide-and-conquer
- * 
+ *
+ * @b Divide-and-conquer
+ *
  * ----April 11, 2025 [13h:46m:04s]----
 */
 

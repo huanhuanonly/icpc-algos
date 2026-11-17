@@ -1,14 +1,15 @@
 /**
  * Codeforces Round 1025 (Div. 2)
- * 
+ *
  * => D. D/D/D ( @c 1900 )
- * 
+ *
  * -> https://codeforces.com/contest/2109/problem/D
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2109/submission/326776413 By huanhuanonly
- * 
- * @b Bfs based on @b layered-graph, and @b Classification-discussion
- * 
+ *
+ * @b Bfs based on @b Layered-graph
+ * @b Classification-discussion
+ *
  * ----July 01, 2025 [17h:48m:52s]----
 */
 
@@ -79,7 +80,7 @@ int main(void)
         {
             int u, v;
             std::cin >> u >> v;
-            
+
             e[u].push_back(v);
             e[v].push_back(u);
         }

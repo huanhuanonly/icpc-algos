@@ -1,14 +1,14 @@
 /**
  * Educational Codeforces Round 97 (Rated for Div. 2)
- * 
+ *
  * => E. Make It Increasing ( @c 2200 )
- * 
+ *
  * -> https://codeforces.com/contest/1437/problem/E
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/1437/submission/330801977 By huanhuanonly
- * 
- * @b Binary-search for @a Longest-Increasing-Subsequence
- * 
+ *
+ * @b Binary-search for @a longest-increasing-subsequence
+ *
  * ----July 25, 2025 [19h:52m:22s]----
 */
 

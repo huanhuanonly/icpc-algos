@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 1052 (Div. 2)
- * 
+ *
  * => D1. Max Sum OR (Easy Version) ( @c 1500 )
- * 
+ *
  * -> https://codeforces.com/contest/2146/problem/D1
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2146/submission/339767383 By huanhuanonly
- * 
- * @b 01-Trie
- * 
+ *
+ * @b Binary-trie
+ *
  * ----September 24, 2025 [01h:31m:47s]----
 */
 

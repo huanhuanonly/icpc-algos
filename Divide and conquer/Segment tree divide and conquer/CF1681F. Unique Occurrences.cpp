@@ -1,14 +1,15 @@
 /**
  * Educational Codeforces Round 129 (Rated for Div. 2)
- * 
+ *
  * => F. Unique Occurrences ( @c 2300 )
- * 
+ *
  * -> https://codeforces.com/contest/1681/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/1681/submission/265065816 By huanhuanonly
- * 
- * @b Segment-tree-divide-and-conquer and @b Disjoint-set-with-rollback
- * 
+ *
+ * @b Segment-tree-divide-and-conquer
+ * @b Disjoint-set-with-rollback
+ *
  * ----June 10, 2024 [21h:55m:17s]----
 */
 
@@ -56,7 +57,7 @@ public:
         {
             ver_fa.push({tree[fv].fa, tree[fv].fa});
             tree[fv].fa = fu;
-            
+
             ver_rank.push({tree[fu].rank, tree[fu].rank});
             tree[fu].rank += tree[fv].rank;
         }
@@ -64,7 +65,7 @@ public:
         {
             ver_fa.push({tree[fu].fa, tree[fu].fa});
             tree[fu].fa = fv;
-            
+
             ver_rank.push({tree[fv].rank, tree[fv].rank});
             tree[fv].rank += tree[fu].rank;
         }

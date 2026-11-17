@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 318 [RussianCodeCup Thanks-Round] (Div. 2)
- * 
+ *
  * => E. Bear and Drawing ( @c 2300 )
- * 
+ *
  * -> https://codeforces.com/contest/574/problem/E
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/574/submission/328675297 By huanhuanonly
- * 
- * @b Classification-discussion and @b Dfs on @a trees
- * 
+ *
+ * @b Classification-discussion and @b Dfs on @a Trees
+ *
  * ----July 12, 2025 [22h:54m:25s]----
 */
 

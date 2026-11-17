@@ -1,11 +1,16 @@
 /**
  * Codeforces Round 221 (Div. 1)
- * 
- * => C. Circling Round Treasures
- * 
- * -> https://codeforces.com/problemset/problem/375/C (2600)
- * 
- * @b Bfs based on @b layered-graph (with Ray-Method)
+ *
+ * => C. Circling Round Treasures ( @c 2600 )
+ *
+ * -> https://codeforces.com/contest/375/problem/C
+ *
+ * Submissions ~> https://codeforces.com/contest/375/submission/250065038 By huanhuanonly
+ *
+ * @b Bfs based on @b Layered-graph
+ * @b Geometry ( @a ray-method )
+ *
+ * ----March 07, 2024 [19h:43m:32s]----
 */
 
 #include <bits/stdc++.h>
@@ -46,7 +51,7 @@ int main(void)
             else if (std::isdigit(mp[i][j]))
                 goods[mp[i][j] - '0' - 1] = std::make_pair(i, j),
                 t = std::max(t, mp[i][j] - '0');
-            
+
             else if (mp[i][j] == 'B')
                 bads.push_back({i, j});
         }
@@ -72,9 +77,9 @@ int main(void)
         {
             int x, y, dp;
         };
-        
+
         std::queue<node> que;
-        
+
         que.push({start.first, start.second, 0});
         dis[start.first][start.second][0] = 0;
         vis[start.first][start.second][0] = true;

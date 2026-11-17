@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 950 (Div. 3)
- * 
- * => G. Yasya and the Mysterious Tree
- * 
- * -> https://codeforces.com/problemset/problem/1980/G (2300)
- * 
- * @b 01-Trie for @a Find_maximum_XOR_sum_problems
+ *
+ * => G. Yasya and the Mysterious Tree ( @c 2300 )
+ *
+ * -> https://codeforces.com/contest/1980/problem/G
+ *
+ * Submissions ~> https://codeforces.com/contest/1980/submission/264225730 By huanhuanonly
+ *
+ * @b Binary-trie ( @a find-maximum-xor-sum-problems )
+ *
+ * ----June 05, 2024 [16h:13m:08s]----
 */
 
 #include <bits/stdc++.h>
@@ -127,7 +131,7 @@ int main(void)
             e[u].push_back({v, w});
             e[v].push_back({u, w});
         }
-        
+
         std::vector<Trie> trie(2);
 
         struct node
@@ -175,7 +179,7 @@ int main(void)
                 std::cin >> u >> x;
 
                 trie[tree[u].depth & 1].erase(tree[u].xorsum);
-                
+
                 std::cout <<
                     std::max(
                         trie[0].max_xor_sum(tree[u].xorsum ^ x ^ (tree[u].depth & 1 ? sum : 0)),

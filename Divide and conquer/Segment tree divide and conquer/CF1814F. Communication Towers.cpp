@@ -1,14 +1,15 @@
 /**
  * Educational Codeforces Round 146 (Rated for Div. 2)
- * 
+ *
  * => F. Communication Towers ( @c 2700 )
- * 
+ *
  * -> https://codeforces.com/contest/1814/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/1814/submission/264606766 By huanhuanonly
- * 
- * @b Segment-tree-divide-and-conquer and @b Disjoint-set-with-rollback ( @a with-lazy-propagation )
- * 
+ *
+ * @b Segment-tree-divide-and-conquer
+ * @b Disjoint-set-with-rollback ( @a with-lazy-propagation )
+ *
  * ----June 07, 2024 [22h:25m:06s]----
 */
 
@@ -64,7 +65,7 @@ public:
             tree[fu].fa = fv;
             lazy[fu] -= lazy[fv];
         }
-        
+
         ver_rank.push({fv, tree[fv].rank});
         if (tree[fu].rank == tree[fv].rank)
         {
@@ -105,12 +106,12 @@ public:
 class SegmentTree
 {
 public:
-    
+
     std::vector<std::vector<int>> tree;
 
     explicit SegmentTree(int __n)
         : tree(__n << 2), vis(__n + 1) { }
-    
+
     static constexpr int ls(int p) { return p << 1; }
     static constexpr int rs(int p) { return p << 1 | 1; }
 

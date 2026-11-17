@@ -1,14 +1,14 @@
 /**
  * => P2762 太空飞行计划问题 ( @c 省选/NOI- )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P2762
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/159238224 By huanhuanonly
- * 
+ *
  * @b Dinic for @a Min-cut ( @a maximum-weight-closure-of-a-graph )
- * 
- * @see also https://zhuanlan.zhihu.com/p/553454908
- * 
+ *
+ * @see https://zhuanlan.zhihu.com/p/553454908
+ *
  * ----May 17, 2024 [15h:04m:04s]----
 */
 
@@ -61,7 +61,7 @@ int main(void)
         std::cin.get();
 
         sum += data[i].first;
-        
+
         std::getline(std::cin, str);
 
         while (str.back() == '\r')
@@ -115,7 +115,7 @@ int main(void)
             {
                 if (i.w == 0 or layer[i.to])
                     continue;
-                
+
                 layer[i.to] = layer[u] + 1;
                 que.push(i.to);
             }

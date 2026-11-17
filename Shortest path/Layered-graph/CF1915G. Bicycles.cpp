@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 918 (Div. 4)
- * 
- * => G. Bicycles
- * 
- * -> https://codeforces.com/problemset/problem/1915/G (1800)
- * 
- * @b Dijkstra based on @b layered-graph
+ *
+ * => G. Bicycles ( @c 1800 )
+ *
+ * -> https://codeforces.com/contest/1915/problem/G
+ *
+ * Submissions ~> https://codeforces.com/contest/1915/submission/243079368 By huanhuanonly
+ *
+ * @b Dijkstra based on @b Layered-graph
+ *
+ * ----January 24, 2024 [12h:53m:27s]----
 */
 
 #include <bits/stdc++.h>
@@ -36,7 +40,7 @@ int main(void)
         struct edge { int to, w; };
 
         std::vector<edge> e[N];
-        
+
         for (int i = 0; i < m; ++i)
         {
             int u, v, w;
@@ -67,7 +71,7 @@ int main(void)
             };
 
             std::priority_queue<node, std::vector<node>, node> que;
-            
+
             que.push({start, v[start], 0});
             dis[start][v[start]] = 0;
 
@@ -98,6 +102,6 @@ int main(void)
 
         std::cout << bfs(1) << '\n';
     }
-    
+
     return 0;
 }

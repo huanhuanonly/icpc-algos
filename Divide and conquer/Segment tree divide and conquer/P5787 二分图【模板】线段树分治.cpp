@@ -1,14 +1,14 @@
 /**
  * => P5787 二分图 /【模板】线段树分治 ( @c 提高+/省选− )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P5787
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/161468390 By huanhuanonly
- * 
+ *
  * @b Segment-tree-divide-and-conquer
  * @b Extended-domain-disjoint-set-with-rollback
- * @b Bipartite-matching
- * 
+ * @b Bipartite-graph
+ *
  * ----June 07, 2024 [00h:42m:18s]----
 */
 
@@ -61,7 +61,7 @@ public:
             ver_fa.push({tree[fu].fa, tree[fu].fa});
             tree[fu].fa = fv;
         }
-        
+
         ver_rank.push({tree[fv].rank, tree[fv].rank});
         if (tree[fu].rank == tree[fv].rank)
         {
@@ -95,13 +95,13 @@ public:
 class SegmentTree
 {
 public:
-    
+
     std::vector<std::vector<std::pair<int, int>>> tree;
     int n;
 
     explicit SegmentTree(int __size, int __n)
         : tree(__size << 2), n(__n) { }
-    
+
     static constexpr int ls(int p) { return p << 1; }
     static constexpr int rs(int p) { return p << 1 | 1; }
 

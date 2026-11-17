@@ -1,17 +1,17 @@
 /**
  * Codeforces Round 446 (Div. 1)
- * 
+ *
  * => C. Envy ( @c 2300 )
- * 
+ *
  * -> https://codeforces.com/contest/891/problem/C
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/891/submission/263213556 By huanhuanonly
- * 
+ *
  * @b Disjoint-set ( @a with-undo )
- * 
+ *
  * ----May 30, 2024 [11h:46m:56s]----
- * 
- * @see also https://zhuanlan.zhihu.com/p/538166784
+ *
+ * @see https://zhuanlan.zhihu.com/p/538166784
 */
 
 #include <bits/stdc++.h>
@@ -63,7 +63,7 @@ public:
             ver_fa.push({tree[fu].fa, tree[fu].fa});
             tree[fu].fa = fv;
         }
-        
+
         ver_rank.push({tree[fv].rank, tree[fv].rank});
         if (tree[fu].rank == tree[fv].rank)
         {
@@ -155,7 +155,7 @@ int main(void)
         else
             return lv.id < rv.id;
     });
-    
+
     DisjointSet ds(n + 1);
 
     for (int i = 1, j = 0; i <= m and j < data.size();)

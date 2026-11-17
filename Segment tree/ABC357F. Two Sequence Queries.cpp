@@ -1,11 +1,15 @@
 /**
  * SuntoryProgrammingContest2024（AtCoder Beginner Contest 357）
- * 
- * => F - Two Sequence Queries
- * 
+ *
+ * => F - Two Sequence Queries ( @c 550 )
+ *
  * -> https://atcoder.jp/contests/abc357/tasks/abc357_f
- * 
+ *
+ * Submissions ~> https://atcoder.jp/contests/abc357/submissions/54497432 By huanhuanonly
+ *
  * @b Segment-tree
+ *
+ * ----June 13, 2024 [15h:21m:01s]----
 */
 
 #include <bits/stdc++.h>
@@ -20,7 +24,7 @@ constexpr int MOD = 998244353;
 class SegmentTree
 {
 public:
-    
+
     struct node
     {
         ullong first, second, sum;

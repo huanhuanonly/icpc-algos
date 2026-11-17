@@ -1,14 +1,14 @@
 /**
  * => P1495 【模板】中国剩余定理（CRT）/ 曹冲养猪 ( @c 提高+/省选− )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P1495
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/220367714 By huanhuanonly
- * 
+ *
  * @b Chinese-remainder-theorem
- * 
- * @see also https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86
- * 
+ *
+ * @see https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86
+ *
  * ----June 13, 2025 [22h:09m:54s]----
 */
 

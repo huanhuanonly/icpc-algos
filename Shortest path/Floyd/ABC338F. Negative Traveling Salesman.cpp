@@ -1,11 +1,16 @@
 /**
  * AtCoder Beginner Contest 338
- * 
- * => F - Negative Traveling Salesman
- * 
+ *
+ * => F - Negative Traveling Salesman ( @c 500 )
+ *
  * -> https://atcoder.jp/contests/abc338/tasks/abc338_f
- * 
- * @b Floyd and @b Dynamic-Programming
+ *
+ * Submissions ~> https://atcoder.jp/contests/abc338/submissions/50900017 By huanhuanonly
+ *
+ * @b Floyd
+ * @b Bitmask-DP
+ *
+ * ----March 04, 2024 [17h:50m:32s]----
 */
 
 #include <bits/stdc++.h>

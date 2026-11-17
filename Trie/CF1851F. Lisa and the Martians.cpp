@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 888 (Div. 3)
- * 
+ *
  * => F. Lisa and the Martians ( @c 1800 )
- * 
+ *
  * -> https://codeforces.com/contest/1851/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/1851/submission/339195844 By huanhuanonly
- * 
- * @b 01-Trie and @b Bitwise-inclusive-OR
- * 
+ *
+ * @b Binary-trie and @b Bitwise-inclusive-OR
+ *
  * ----September 18, 2025 [10h:46m:25s]----
 */
 

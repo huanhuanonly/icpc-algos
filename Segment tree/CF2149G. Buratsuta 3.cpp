@@ -1,16 +1,16 @@
 /**
  * Codeforces Round 1054 (Div. 3)
- * 
+ *
  * => G. Buratsuta 3 ( @c 2100 )
- * 
+ *
  * -> https://codeforces.com/contest/2149/problem/G
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2149/submission/340654055 By huanhuanonly
- * 
+ *
  * @b Segment-tree and @b Extended-Boyer–Moore-majority-vote-algorithm
- * 
- * @see also https://zhuanlan.zhihu.com/p/387744743
- * 
+ *
+ * @see https://zhuanlan.zhihu.com/p/387744743
+ *
  * ----September 27, 2025 [01h:21m:16s]----
 */
 
@@ -95,11 +95,11 @@ public:
     constexpr void resize(size_type __n)
     { tree.resize(nodes_count(__n)); }
 
-    
+
     template<typename _Callback>
     constexpr void for_each(int __l, int __r, _Callback __func)
     { _M_for_each(1, 1, size(), __l + 1, __r + 1, __func); }
-    
+
     template<typename _Callback>
     constexpr void for_each(_Callback __func)
     { for_each(0, size() - 1, __func); }
@@ -116,7 +116,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void build(_ForwardIterator __first, _ForwardIterator __last)
     { build(0, __first, __last); }
-    
+
     template<typename _ForwardIterator>
     constexpr void build(int __l, _ForwardIterator __first, _ForwardIterator __last)
     { if (__first != __last) { for_each(__l, size() - 1, [&](value_type& __v) -> bool { __v = *__first; return ++__first != __last; }); } }
@@ -125,7 +125,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void flatten(_ForwardIterator __first, size_type __n = std::numeric_limits<size_type>::max())
     { if (__n) { for_each(0, __n - 1, [&](const value_type& __v) -> bool { *__first = __v; ++__first; return true; }); } }
-    
+
     template<typename _ForwardIterator>
     constexpr void flatten(int __l, int __r, _ForwardIterator __first)
     { for_each(__l, __r, [&](const value_type& __v) -> bool { *__first = __v; ++__first; return true; }); }
@@ -133,7 +133,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void flatten(_ForwardIterator __first, _ForwardIterator __last)
     { flatten(0, __first, __last); }
-    
+
     template<typename _ForwardIterator>
     constexpr void flatten(int __l, _ForwardIterator __first, _ForwardIterator __last)
     { if (__first != __last) { for_each(__l, size() - 1, [&](const value_type& __v) -> bool { *__first = __v; return ++__first != __last; }); } }
@@ -158,7 +158,7 @@ public:
     template<typename _Tp, typename _BinaryOperation>
     constexpr void set(const _Tp& __value, _BinaryOperation __binary_op)
     { set(0, size() - 1, __value, __binary_op); }
-    
+
     template<typename _Tp = value_type>
     constexpr void set(int __p, const _Tp& __value)
     { set(__p, __p, __value); }
@@ -166,7 +166,7 @@ public:
     template<typename _Tp, typename _BinaryOperation>
     constexpr void set(int __p, const _Tp& __value, _BinaryOperation __binary_op)
     { set(__p, __p, __value, __binary_op); }
-    
+
     template<typename _Tp = value_type>
     constexpr void set(int __l, int __r, const _Tp& __value)
     { for_each(__l, __r, [&](value_type& __v) -> bool { __v = __value; return true; }); }
@@ -318,7 +318,7 @@ int main(void)
 
             const auto li = std::ranges::lower_bound(ref, l);
             const auto ri = std::ranges::upper_bound(ref, r);
-            
+
             return ri - li;
         };
 
@@ -343,7 +343,7 @@ int main(void)
                         self.data[0].count += other.data[i].count;
                         continue;
                     }
-                    
+
                     if (self.data[1].value == other.data[i].value)
                     {
                         self.data[1].count += other.data[i].count;

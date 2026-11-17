@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 974 (Div. 3)
- * 
- * => E. Rendez-vous de Marian et Robin
- * 
+ *
+ * => E. Rendez-vous de Marian et Robin ( @c 1800 )
+ *
  * -> https://codeforces.com/contest/2014/problem/E
- * 
- * @b Dijkstra based on @b layered-graph
+ *
+ * Submissions ~> https://codeforces.com/contest/2014/submission/282709567 By huanhuanonly
+ *
+ * @b Dijkstra based on @b Layered-graph
+ *
+ * ----September 24, 2024 [22h:21m:50s]----
 */
 
 #include <bits/stdc++.h>

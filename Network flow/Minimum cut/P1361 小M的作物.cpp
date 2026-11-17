@@ -1,14 +1,14 @@
 /**
  * => P1361 小M的作物 ( @c 省选/NOI- )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P1361
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/159180198 By huanhuanonly
- * 
+ *
  * @b Dinic for @a Min-cut ( @a maximum-weight-closure-of-a-graph )
- * 
- * @see also https://zhuanlan.zhihu.com/p/553454908
- * 
+ *
+ * @see https://zhuanlan.zhihu.com/p/553454908
+ *
  * ----May 16, 2024 [19h:50m:28s]----
 */
 
@@ -57,7 +57,7 @@ int main(void)
     std::cin >> m;
 
     std::vector<std::vector<edge>> e(n + m + m + 2 + 1);
-    
+
     int s = n + m + m + 1, t = n + m + m + 2;
 
     for (int i = 1; i <= n; ++i)
@@ -120,7 +120,7 @@ int main(void)
             {
                 if (i.w == 0 or layer[i.to])
                     continue;
-                
+
                 layer[i.to] = layer[u] + 1;
                 que.push(i.to);
             }

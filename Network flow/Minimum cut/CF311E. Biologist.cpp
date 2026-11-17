@@ -1,16 +1,16 @@
 /**
  * Codeforces Round 185 (Div. 1)
- * 
+ *
  * => E. Biologist ( @c 2300 )
- * 
+ *
  * -> https://codeforces.com/contest/311/problem/E
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/311/submission/261169633 By huanhuanonly
- * 
+ *
  * @b Dinic for @a Min-cut ( @a maximum-weight-closure-of-a-graph )
- * 
- * @see also https://zhuanlan.zhihu.com/p/553454908
- * 
+ *
+ * @see https://zhuanlan.zhihu.com/p/553454908
+ *
  * ----May 16, 2024 [17h:05m:00s]----
 */
 
@@ -97,7 +97,7 @@ int main(void)
             for (int j = 0; j < k; ++j)
             {
                 const int& x = st[j];
-                
+
                 e[n + i].push_back({x, inf, int(e[x].size())});
                 e[x].push_back({n + i, 0, int(e[n + i].size() - 1)});
             }
@@ -110,7 +110,7 @@ int main(void)
             for (int j = 0; j < k; ++j)
             {
                 const int& x = st[j];
-                
+
                 e[x].push_back({n + i, inf, int(e[n + i].size())});
                 e[n + i].push_back({x, 0, int(e[x].size() - 1)});
             }

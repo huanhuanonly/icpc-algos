@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 179 (Div. 1)
- * 
- * => B. Greg and Graph
- * 
- * -> https://codeforces.com/problemset/problem/295/B (1700)
- * 
- * @b Floyd with dynamic insertion
+ *
+ * => B. Greg and Graph ( @c 1700 )
+ *
+ * -> https://codeforces.com/contest/295/problem/B
+ *
+ * Submissions ~> https://codeforces.com/contest/295/submission/249600754 By huanhuanonly
+ *
+ * @b Floyd ( @a dynamic-insertion )
+ *
+ * ----March 04, 2024 [21h:46m:15s]----
 */
 
 #include <bits/stdc++.h>
@@ -117,6 +121,6 @@ int main(void)
 
     for (int i = n - 1; i >= 0; --i)
         std::cout << ans[i] << ' ';
-    
+
     return 0;
 }

@@ -1,15 +1,15 @@
 /**
  * Codeforces Round 1074 (Div. 4)
- * 
+ *
  * => F. BattleCows ( @c 1700 )
- * 
+ *
  * -> https://codeforces.com/contest/2185/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2185/submission/358577660 By huanhuanonly
- * 
- * @b Dfs and @b Divide-and-conquer
+ *
+ * @b Divide-and-conquer
  * @b Prefix-sum
- * 
+ *
  * ----January 18, 2026 [23h:41m:45s]----
 */
 

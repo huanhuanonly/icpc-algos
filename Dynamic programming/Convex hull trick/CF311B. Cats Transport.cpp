@@ -1,21 +1,21 @@
 /**
  * Codeforces Round 185 (Div. 1)
- * 
+ *
  * => B. Cats Transport ( @c 2400 )
- * 
+ *
  * -> https://codeforces.com/contest/311/problem/B
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/311/submission/348450801 By huanhuanonly
- * 
+ *
  * @b DP with @b Convex-hull-trick
  * @b Prefix-sum
  * @b Monotonic-queue
- * 
+ *
  * ----November 11, 2025 [17h:52m:06s]----
 */
 
 /**
- * @see also the original solution https://codeforces.com/contest/311/submission/347631999 in O(pm^2)
+ * @see the original solution https://codeforces.com/contest/311/submission/347631999 in O(pm^2)
  *      without any optimizations.
  */
 
@@ -77,7 +77,7 @@ int main(void)
     constexpr auto inf = std::numeric_limits<int64>::max() / 2;
 
     std::vector dp(p + 1, std::vector(m + 1, inf));
-    
+
     for (int i = 0; i <= p; ++i)
     {
         dp[i][0] = 0;

@@ -1,11 +1,15 @@
 /**
  * AtCoder Beginner Contest 367
- * 
- * => E - Permute K times
- * 
+ *
+ * => E - Permute K times ( @c 450 )
+ *
  * -> https://atcoder.jp/contests/abc367/tasks/abc367_e
- * 
+ *
+ * Submissions ~> https://atcoder.jp/contests/abc367/submissions/56925269 By huanhuanonly
+ *
  * @b Binary-lifting
+ *
+ * ----August 20, 2024 [18h:03m:42s]----
 */
 
 #include <bits/stdc++.h>

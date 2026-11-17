@@ -1,12 +1,12 @@
 /**
  * => P1073 [NOIP 2009 提高组] 最优贸易 ( @c 提高+/省选− )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P1073
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/217774010 By huanhuanonly
- * 
- * @b Bfs based on @b layered-graph
- * 
+ *
+ * @b Bfs based on @b Layered-graph
+ *
  * ----May 19, 2025 [18h:51m:39s]----
 */
 
@@ -73,7 +73,7 @@ int main(void)
             e[y].push_back(edge{x, {}});
         }
     }
-    
+
     std::vector<bool> deleted(n + 1, true);
 
     {
@@ -138,12 +138,12 @@ int main(void)
                 }
 
                 vis[i.point] |= next;
-                
+
                 if (auto f = vis[cur.point]._Find_first(); f != vis[cur.point].size())
                 {
                     ans = std::max(ans, v[i.point] - static_cast<int>(f));
                 }
-                
+
                 que.push({i.point, next});
             }
         }

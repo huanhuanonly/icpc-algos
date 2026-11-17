@@ -1,14 +1,12 @@
 /**
- * ContestTitle
- * 
  * => P2455 [SDOI2006] 线性方程组.cpp ( @c 提高+/省选− )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P2455
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/275056461 By huanhuanonly
- * 
+ *
  * @b Gaussian-elimination
- * 
+ *
  * ----April 22, 2026 [10h:09m:51s]----
 */
 
@@ -79,7 +77,7 @@ int main(void)
         }
 
         std::swap(v[cur], v[mxid]);
-        
+
         if (std::abs(v[cur][k]) < eps)
         {
             continue;
@@ -133,7 +131,7 @@ int main(void)
     else
     {
         std::cout << std::fixed << std::setprecision(12);
-    
+
         for (int i = 0; i < n; ++i)
         {
             std::cout << 'x' << i + 1 << '=' << v[i].back() << '\n';

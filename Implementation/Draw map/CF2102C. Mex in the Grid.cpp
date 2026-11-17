@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 1024 (Div. 2)
- * 
+ *
  * => C. Mex in the Grid ( @c 1300 )
- * 
+ *
  * -> https://codeforces.com/contest/2102/problem/C
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2102/submission/319478286 By huanhuanonly
- * 
- * @b Implementation
- * 
+ *
+ * @b Implementation ( @a draw-map )
+ *
  * ----May 13, 2025 [17h:36m:39s]----
 */
 
@@ -83,7 +83,7 @@ int main(void)
                 {
                     v[i][m - k] = ++id;
                 }
-    
+
                 for (int i = m - k; i <= m + k; ++i)
                 {
                     v[m - k][i] = ++id;

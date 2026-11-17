@@ -1,19 +1,19 @@
 /**
  * Codeforces Round 1053 (Div. 2)
- * 
+ *
  * => E. Limited Edition Shop ( @c 2100 )
- * 
+ *
  * -> https://codeforces.com/contest/2151/problem/E
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2151/submission/340717361 By huanhuanonly
- * 
+ *
  * @b DP with @b Lazy-segment-tree
- * 
+ *
  * ----September 27, 2025 [16h:12m:50s]----
 */
 
 /**
- * @see also the original solution https://codeforces.com/contest/2151/submission/340712261 in O(n^2)
+ * @see the original solution https://codeforces.com/contest/2151/submission/340712261 in O(n^2)
  *      without any optimizations.
  */
 
@@ -98,11 +98,11 @@ public:
     constexpr void resize(size_type __n)
     { tree.resize(nodes_count(__n)); }
 
-    
+
     template<typename _Callback>
     constexpr void for_each(int __l, int __r, _Callback __func)
     { _M_for_each(1, 1, size(), __l + 1, __r + 1, __func); }
-    
+
     template<typename _Callback>
     constexpr void for_each(_Callback __func)
     { for_each(0, size() - 1, __func); }
@@ -119,7 +119,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void build(_ForwardIterator __first, _ForwardIterator __last)
     { build(0, __first, __last); }
-    
+
     template<typename _ForwardIterator>
     constexpr void build(int __l, _ForwardIterator __first, _ForwardIterator __last)
     { if (__first != __last) { for_each(__l, size() - 1, [&](value_type& __v) -> bool { __v = *__first; return ++__first != __last; }); } }
@@ -128,7 +128,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void flatten(_ForwardIterator __first, size_type __n = std::numeric_limits<size_type>::max())
     { if (__n) { for_each(0, __n - 1, [&](const value_type& __v) -> bool { *__first = __v; ++__first; return true; }); } }
-    
+
     template<typename _ForwardIterator>
     constexpr void flatten(int __l, int __r, _ForwardIterator __first)
     { for_each(__l, __r, [&](const value_type& __v) -> bool { *__first = __v; ++__first; return true; }); }
@@ -136,7 +136,7 @@ public:
     template<typename _ForwardIterator>
     constexpr void flatten(_ForwardIterator __first, _ForwardIterator __last)
     { flatten(0, __first, __last); }
-    
+
     template<typename _ForwardIterator>
     constexpr void flatten(int __l, _ForwardIterator __first, _ForwardIterator __last)
     { if (__first != __last) { for_each(__l, size() - 1, [&](const value_type& __v) -> bool { *__first = __v; return ++__first != __last; }); } }
@@ -164,7 +164,7 @@ public:
     template<typename _Tp, typename _BinaryOperation>
     constexpr void set(const _Tp& __value, _BinaryOperation __binary_op)
     { set(0, size() - 1, __value, __binary_op); }
-    
+
     template<typename _Tp = value_type>
     constexpr void set(int __p, const _Tp& __value)
     { set(__p, __p, __value); }
@@ -172,7 +172,7 @@ public:
     template<typename _Tp, typename _BinaryOperation>
     constexpr void set(int __p, const _Tp& __value, _BinaryOperation __binary_op)
     { set(__p, __p, __value, __binary_op); }
-    
+
     template<typename _Tp = value_type>
     constexpr void set(int __l, int __r, const _Tp& __value)
     { for_each(__l, __r, [&](value_type& __v) -> bool { __v = __value; return true; }); }
@@ -352,7 +352,7 @@ public:
     using lazy_type  = _LazyType;
 
     using parent_type::size;
-    
+
     struct lazy_build_info
     {
         value_type& value;
@@ -374,7 +374,7 @@ private:
     using parent_type::merge;
 
 public:
-    
+
     constexpr explicit LazySegmentTree(size_type __n = 0)
         : parent_type(__n), lazy(tree.size()), marked(tree.size())
     { }
@@ -394,7 +394,7 @@ public:
     constexpr LazySegmentTree(size_type __n, const value_type& __value, _MergeFunc __merge)
         : parent_type(__n, __value, __merge), lazy(tree.size()), marked(tree.size())
     { }
-    
+
     constexpr LazySegmentTree(size_type __n, const value_type& __value, _MergeFunc __merge, _MakeLazyFunc __makelazy)
         : parent_type(__n, __value, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
     { }
@@ -408,7 +408,7 @@ public:
     constexpr LazySegmentTree(const _Container& __c, _MergeFunc __merge)
         : parent_type(__c, __merge), lazy(tree.size()), marked(tree.size())
     { }
-    
+
     template<typename _Container, typename = std::void_t<decltype(std::declval<_Container>().size()), decltype(std::declval<_Container>().begin())>>
     constexpr LazySegmentTree(const _Container& __c, _MergeFunc __merge, _MakeLazyFunc __makelazy)
         : parent_type(__c, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
@@ -423,15 +423,15 @@ public:
     constexpr LazySegmentTree(_ForwardIterator __first, _ForwardIterator __last, _MergeFunc __merge)
         : parent_type(__first, __last, __merge), lazy(tree.size()), marked(tree.size())
     { }
-    
+
     template<typename _ForwardIterator>
     constexpr LazySegmentTree(_ForwardIterator __first, _ForwardIterator __last, _MergeFunc __merge, _MakeLazyFunc __makelazy)
         : parent_type(__first, __last, __merge), lazy(tree.size()), marked(tree.size()), make_lazy_func(__makelazy)
     { }
-    
+
     constexpr void range_update(int __l, int __r, const lazy_type& __value)
     { _M_range_update(1, 1, size(), __l + 1, __r + 1, __value); }
-    
+
     constexpr void resize(size_type __n)
     {
         parent_type::resize(__n);
@@ -469,7 +469,7 @@ protected:
 
             make_lazy(ls(p), l, mid, lazy[p]);
             make_lazy(rs(p), mid + 1, r, lazy[p]);
-            
+
             lazy[p] = lazy_type{};
             marked[p] = false;
         }
@@ -496,7 +496,7 @@ protected:
         {
             _M_range_update(rs(p), mid + 1, r, x, y, v);
         }
-        
+
         push_up(p);
     }
 

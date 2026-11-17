@@ -1,16 +1,16 @@
 /**
  * => P3376 【模板】网络最大流 ( @c 提高+/省选− )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P3376
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/158907973 By huanhuanonly
- * 
+ *
  * @b Dinic for @a Max-flow
- * 
- * @see also https://www.luogu.com.cn/article/mdxzcolz
- * @see also https://www.bilibili.com/video/BV1j64y1R7yK/?share_source=copy_web&vd_source=732393e31697536fd95455eba7a2b048
- * @see also https://www.bilibili.com/video/av21945401/?vd_source=cd60a4f26275c444c0463c3d3af089ba
- * 
+ *
+ * @see https://www.luogu.com.cn/article/mdxzcolz
+ * @see https://www.bilibili.com/video/BV1j64y1R7yK/?share_source=copy_web&vd_source=732393e31697536fd95455eba7a2b048
+ * @see https://www.bilibili.com/video/av21945401/?vd_source=cd60a4f26275c444c0463c3d3af089ba
+ *
  * ----May 13, 2024 [19h:12m:14s]----
 */
 

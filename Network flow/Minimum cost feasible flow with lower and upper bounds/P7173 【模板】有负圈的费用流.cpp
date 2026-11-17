@@ -1,14 +1,14 @@
 /**
  * => P7173 【模板】有负圈的费用流 ( @c 省选/NOI- )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P7173
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/160451873 By huanhuanonly
- * 
+ *
  * @b SPFA-Dinic for @a Minimum-cost-feasible-flow-with-lower-and-upper-bounds ( @a with-a-source-and-sink )
- * 
- * @see also https://www.acwing.com/solution/content/147628
- * 
+ *
+ * @see https://www.acwing.com/solution/content/147628
+ *
  * ----May 27, 2024 [16h:44m:45s]----
 */
 
@@ -125,7 +125,7 @@ int main(void)
     {
         if (u == ct)
             return limit;
-        
+
         for (int c = cur[u]; c < e[u].size(); ++c)
         {
             cur[u] = c;
@@ -164,7 +164,7 @@ int main(void)
     }
 
     int flow;
-    
+
     cs = s, ct = t;
     while (bfs())
     {

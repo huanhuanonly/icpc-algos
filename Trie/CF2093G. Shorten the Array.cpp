@@ -1,14 +1,14 @@
 /**
  * Codeforces Round 1016 (Div. 3)
- * 
+ *
  * => G. Shorten the Array ( @c 1900 )
- * 
+ *
  * -> https://codeforces.com/contest/2093/problem/G
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/2093/submission/315270356 By huanhuanonly
- * 
- * @b 01-Trie
- * 
+ *
+ * @b Binary-trie
+ *
  * ----April 13, 2025 [21h:33m:38s]----
 */
 
@@ -48,7 +48,7 @@ public:
     void insert(uint32 value, uint32 time)
     {
         uint32 now = 0;
-        
+
         for (uint32 i = 30; i--; )
         {
             uint32 c = value >> i & 1;

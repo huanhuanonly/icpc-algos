@@ -1,14 +1,14 @@
 /**
  * Tinkoff Challenge - Elimination Round
- * 
+ *
  * => B. Igor and his way to work ( @c 1600 )
- * 
+ *
  * -> https://codeforces.com/contest/793/problem/B
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/793/submission/345381821 By huanhuanonly
- * 
- * @b Dijkstra based on @b layered-graph
- * 
+ *
+ * @b Dijkstra based on @b Layered-graph
+ *
  * ----October 24, 2025 [00h:21m:11s]----
 */
 
@@ -88,7 +88,7 @@ int main(void)
     };
 
     std::priority_queue<item> que;
-    
+
     for (int i = 0; i < 4; ++i)
     {
         que.push({sx, sy, i, 0});

@@ -1,12 +1,13 @@
 /**
  * => P1020 [NOIP 1999 提高组] 导弹拦截 ( @c 普及+/提高 )
- * 
+ *
  * -> https://www.luogu.com.cn/problem/P1020
- * 
+ *
  * Submissions ~> https://www.luogu.com.cn/record/228044298 By huanhuanonly
- * 
- * @b Binary-search for @a Longest-Non-Increasing-Subsequence ( @a Dilworth's-theorem )
- * 
+ *
+ * @b Binary-search for @a longest-non-increasing-subsequence
+ * @b Dilworth's-theorem
+ *
  * ----July 31, 2025 [18h:17m:12s]----
 */
 

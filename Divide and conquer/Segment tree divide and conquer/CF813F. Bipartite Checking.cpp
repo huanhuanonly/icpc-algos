@@ -1,16 +1,16 @@
 /**
  * Educational Codeforces Round 22
- * 
+ *
  * => F. Bipartite Checking ( @c 2500 )
- * 
+ *
  * -> https://codeforces.com/contest/813/problem/F
- * 
+ *
  * Submissions ~> https://codeforces.com/contest/813/submission/346645976 By huanhuanonly
- * 
+ *
  * @b Segment-tree-divide-and-conquer
  * @b Extended-domain-disjoint-set-with-rollback
- * @b Bipartite-matching
- * 
+ * @b Bipartite-graph
+ *
  * ----October 30, 2025 [22h:27m:37s]----
 */
 
@@ -97,7 +97,7 @@ public:
         {
             history.top().parent.first = history.top().parent.second;
             history.top().rank.first = history.top().rank.second;
-    
+
             history.pop();
         }
     }
@@ -170,7 +170,7 @@ public:
             else
             {
                 const int mid = l + r >> 1;
-    
+
                 dfs(ls(u), l, mid, n, dsu, ans);
                 dfs(rs(u), mid + 1, r, n, dsu, ans);
             }

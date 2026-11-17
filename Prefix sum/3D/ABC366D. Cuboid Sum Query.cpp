@@ -1,11 +1,15 @@
 /**
  * AtCoder Beginner Contest 366
- * 
- * => D - Cuboid Sum Query
- * 
+ *
+ * => D - Cuboid Sum Query ( @c 400 )
+ *
  * -> https://atcoder.jp/contests/abc366/tasks/abc366_d
- * 
+ *
+ * Submissions ~> https://atcoder.jp/contests/abc366/submissions/56622543 By huanhuanonly
+ *
  * @b 3D-Prefix-Sum
+ *
+ * ----August 12, 2024 [11h:45m:38s]----
 */
 
 #include <bits/stdc++.h>
@@ -53,7 +57,7 @@ int main(void)
 
         int ans = pre[ri][rj][rk] - pre[ri][lj - 1][rk] - pre[ri][rj][lk - 1] + pre[ri][lj - 1][lk - 1]
             - (pre[li - 1][rj][rk] - pre[li - 1][lj - 1][rk] - pre[li - 1][rj][lk - 1] + pre[li - 1][lj - 1][lk - 1]);
-        
+
         std::cout << ans << '\n';
     }
 

@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 703 (Div. 2)
- * 
- * => E. Paired Payment
- * 
- * -> https://codeforces.com/problemset/problem/1486/E (2200)
- * 
- * @b Dijkstra based on @b layered-graph
+ *
+ * => E. Paired Payment ( @c 2200 )
+ *
+ * -> https://codeforces.com/contest/1486/problem/E
+ *
+ * Submissions ~> https://codeforces.com/contest/1486/submission/262220999 By huanhuanonly
+ *
+ * @b Dijkstra based on @b Layered-graph
+ *
+ * ----May 23, 2024 [19h:21m:36s]----
 */
 
 #include <bits/stdc++.h>
@@ -77,7 +81,7 @@ int main(void)
 
             if (vis[to][dp])
                 continue;
-            
+
             vis[to][dp] = true;
 
             if (dp)

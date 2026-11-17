@@ -1,11 +1,15 @@
 /**
  * Codeforces Round 857 (Div. 1)
- * 
- * => D. The way home
- * 
- * -> https://codeforces.com/contest/1801/problem/D (2100)
- * 
- * @b Dijkstra based on @b layered-graph
+ *
+ * => D. The way home ( @c 2100 )
+ *
+ * -> https://codeforces.com/contest/1801/problem/D
+ *
+ * Submissions ~> https://codeforces.com/contest/1801/submission/250479926 By huanhuanonly
+ *
+ * @b Dijkstra based on @b Layered-graph
+ *
+ * ----March 10, 2024 [16h:49m:46s]----
 */
 
 #include <bits/stdc++.h>
@@ -42,7 +46,7 @@ int main(void)
         };
 
         std::vector<std::vector<edge>> e(n + 1);
-        
+
         for (int i = 0; i < m; ++i)
         {
             ullong u, v, s;
@@ -60,7 +64,7 @@ int main(void)
         std::vector<std::vector<ullong>> dp_money(n + 1, std::vector<ullong>(n + 1));
 
         std::vector<std::vector<ullong>> vis(n + 1, std::vector<ullong>(n + 1));
-        
+
         auto bfs = [&](ullong start) -> llong
         {
             struct node
@@ -82,7 +86,7 @@ int main(void)
             que.push({start, 0, p, start});
             dp_cnt[start][start] = 0;
             dp_money[start][start] = p;
-            
+
             while (not que.empty())
             {
                 node ct = que.top();
@@ -90,7 +94,7 @@ int main(void)
 
                 if (vis[ct.point][ct.state])
                     continue;
-                
+
                 vis[ct.point][ct.state] = true;
 
                 for (const auto& [to, s] : e[ct.point])
@@ -103,11 +107,11 @@ int main(void)
                         cnt += ullong(std::ceil(double(s - ct.money) / w[ct.state]));
                         money += ullong(std::ceil(double(s - ct.money) / w[ct.state])) * w[ct.state];
                     }
-                    
+
                     money -= s;
 
                     ullong state = ct.state;
-                    
+
                     if (w[to] > w[state])
                         state = to;
 
@@ -130,7 +134,7 @@ int main(void)
 
             for (int i = 1; i <= n; ++i)
                 ans = std::min(ans, llong(dp_cnt[n][i]));
-            
+
             return ans != inf ? ans : -1;
         };
 

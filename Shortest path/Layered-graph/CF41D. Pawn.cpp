@@ -1,11 +1,15 @@
 /**
  * Codeforces Beta Round 40 (Div. 2)
- * 
- * => D. Pawn
- * 
- * -> https://codeforces.com/problemset/problem/41/D (1900)
- * 
- * @b Bfs based on @b layered-graph
+ *
+ * => D. Pawn ( @c 1900 )
+ *
+ * -> https://codeforces.com/contest/41/problem/D
+ *
+ * Submissions ~> https://codeforces.com/contest/41/submission/270128782 By huanhuanonly
+ *
+ * @b Bfs based on @b Layered-graph
+ *
+ * ----July 12, 2024 [14h:36m:48s]----
 */
 
 #include <bits/stdc++.h>
@@ -106,7 +110,7 @@ int main(void)
 		std::string ans;
 
 		int x = 1, y = col, dis = mx;
-		
+
 		for (; x < n; ++x)
 		{
 			ans.push_back(vis[x][y][dis]);
